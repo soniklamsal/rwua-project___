@@ -2,13 +2,77 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { executeQuery } from '@/lib/wordpress/client';
 import { SUCCESS_STORIES } from '@/lib/constants';
+
+// WordPress query
+const GET_VOICES_OF_IMPACT = `
+  query GetVoicesOfImpact {
+    posts(where: { categoryName: "Voices of Impact" }, first: 3) {
+      nodes {
+        id
+        title
+        excerpt
+        slug
+        featuredImage {
+          node {
+            sourceUrl
+            mediaItemUrl
+            altText
+          }
+        }
+        categories {
+          nodes {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const FacesOfChange: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [expandedImage, setExpandedImage] = useState<{url: string, name: string} | null>(null);
+  const [storiesData, setStoriesData] = useState<any[]>(SUCCESS_STORIES);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
+
+  // Fetch WordPress data
+  useEffect(() => {
+    const fetchVoicesData = async () => {
+      try {
+        const wpData = await executeQuery(GET_VOICES_OF_IMPACT);
+        
+        if (wpData?.posts?.nodes && wpData.posts.nodes.length > 0) {
+          const wpStories = wpData.posts.nodes.map((post: any, index: number) => ({
+            id: post.id || (index + 1).toString(),
+            name: post.title || `Voice of Impact ${index + 1}`,
+            content: post.excerpt ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : 'Read this inspiring story of transformation and impact...',
+            imageUrl: post.featuredImage?.node?.sourceUrl || post.featuredImage?.node?.mediaItemUrl || `https://images.unsplash.com/photo-${1542601906990 + index}?auto=format&fit=crop&q=80&w=800`,
+            location: 'Community Impact', // Default since ACF location is commented out
+            category: post.categories?.nodes?.[0]?.name || 'Impact Story',
+            slug: post.slug || '',
+            altText: post.featuredImage?.node?.altText || post.title
+          }));
+          
+          setStoriesData(wpStories);
+        } else {
+          // Only use fallback if WordPress returns no data
+          setStoriesData(SUCCESS_STORIES);
+        }
+      } catch (error) {
+        console.error('Error fetching WordPress Voices of Impact data:', error);
+        // Only use fallback if WordPress is completely unavailable
+        setStoriesData(SUCCESS_STORIES);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVoicesData();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -61,8 +125,8 @@ export const FacesOfChange: React.FC = () => {
               <h4 className="text-terracotta font-black uppercase tracking-[0.4em] text-[10px]">Voices of Impact</h4>
               <div className="w-8 h-[2px] bg-terracotta/40"></div>
             </div>
-            <h2 className="text-5xl lg:text-7xl font-serif-impact text-deep-purple leading-tight tracking-tighter">
-              Real people. <span className="italic opacity-80 ml-2">Real stories.</span>
+            <h2 className="text-5xl lg:text-7xl font-serif-impact text-core-blue leading-tight tracking-tighter">
+              Real people. <span className="italic text-impact-red opacity-80 ml-2">Real stories.</span>
             </h2>
           </div>
         </div>
@@ -71,7 +135,7 @@ export const FacesOfChange: React.FC = () => {
           {/* Impact Stories Grid */}
           <div className="flex-grow">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
-              {SUCCESS_STORIES.map((story, index) => (
+              {storiesData.map((story, index) => (
                 <div 
                   key={story.id} 
                   className={`bg-white rounded-none overflow-hidden ring-1 ring-stone-100 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07),0_4px_6px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-500 group flex flex-col h-full transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
@@ -82,12 +146,18 @@ export const FacesOfChange: React.FC = () => {
                     className="aspect-[4/3] overflow-hidden relative cursor-pointer"
                     onClick={() => setExpandedImage({url: story.imageUrl, name: story.name})}
                   >
-                  
-                    
                     <img 
                       src={story.imageUrl} 
-                      alt={story.name}
+                      alt={story.altText || story.name}
                       className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale-[30%] group-hover:grayscale-0"
+                      onError={(e) => {
+                        // Fallback to a default image if WordPress image fails
+                        const target = e.target as HTMLImageElement;
+                        if (!target.src.includes('unsplash')) {
+                          const fallbackIndex = index % SUCCESS_STORIES.length;
+                          target.src = SUCCESS_STORIES[fallbackIndex].imageUrl;
+                        }
+                      }}
                     />
                     
                     {/* Subtle Overlay Badge */}

@@ -1,118 +1,187 @@
+'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Target, Globe, Rocket, ArrowUpRight } from 'lucide-react';
+import { executeQuery } from '@/lib/wordpress/client';
 
-const pillars = [
+// WordPress query
+const GET_FOCUS_AREAS_SECTION = `
+  query GetFocusAreasSection {
+    focusArea(id: "focusarea", idType: SLUG) {
+      title
+      focusAreaFieldsType {
+        focusCards {
+          title
+          desc
+          metric
+        }
+      }
+    }
+  }
+`;
+
+const focusData = [
   {
     id: 1,
     title: "Core Vision",
-    impact: "1,200+ Students",
-    description: "Desire of Rural Women Upliftment Association “Establishment of Quality and Equitable and Prosperous Society.",
-    color: "bg-deep-purple",
-    textColor: "text-deep-purple",
-    accent: "border-deep-purple/30",
-    hoverBorder: "hover:border-deep-purple",
-    glow: "group-hover:shadow-[0_40px_100px_rgba(76,29,149,0.2)]",
-    offset: "lg:-translate-y-16"
+    desc: "Desire of Rural Women Upliftment Association “Establishment of Quality and Equitable and Prosperous Society.",
+    metric: "1,200+ Students",
+    icon: <Globe className="w-6 h-6" />,
+    color: "bg-core-blue",
+    glow: "bg-[#4C1D95]/5",
+    // Constant deeper shadow for icons
+    shadow: "shadow-[0_20px_50px_rgba(76,29,149,0.3)]", 
+    border: "group-hover:border-[#4C1D95]/40"
   },
   {
     id: 2,
     title: "Core Mission",
-    impact: "45+ Cooperatives",
-    description: "To transform the community by mobilizing and empowering the target group, improving economic, social and healthy life.",
-    color: "bg-terracotta",
-    textColor: "text-terracotta",
-    accent: "border-terracotta/30",
-    hoverBorder: "hover:border-terracotta",
-    glow: "group-hover:shadow-[0_40px_100px_rgba(194,65,12,0.2)]",
-    offset: "lg:translate-y-16"
+    desc: "To transform the community by mobilizing and empowering the target group, improving economic and social life.",
+    metric: "45+ Cooperatives",
+    icon: <Rocket className="w-6 h-6" />,
+    color: "bg-impact-red",
+    glow: "bg-[#C2410C]/5",
+    shadow: "shadow-[0_20px_50px_rgba(194,65,12,0.3)]",
+    border: "group-hover:border-[#C2410C]/40"
   },
   {
     id: 3,
     title: "Core Goal",
-    impact: "5k+ Lives",
-    description: "A dignified life will be built by improving the quality of education healthy life and income of the Community.",
-    color: "bg-vibrant-gold",
-    textColor: "text-vibrant-gold",
-    accent: "border-vibrant-gold/30",
-    hoverBorder: "hover:border-vibrant-gold",
-    glow: "group-hover:shadow-[0_40px_100px_rgba(217,119,6,0.2)]",
-    offset: "lg:-translate-y-8"
+    desc: "A dignified life will be built by improving the quality of education healthy life and income of the Community.",
+    metric: "5k+ Lives",
+    icon: <Target className="w-6 h-6" />,
+    color: "bg-flash-yellow",
+    glow: "bg-[#D97706]/5",
+    shadow: "shadow-[0_20px_50px_rgba(217,119,6,0.3)]",
+    border: "group-hover:border-[#D97706]/40"
   }
 ];
 
 export const FocusAreas: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+  const [focusAreasData, setFocusAreasData] = useState(focusData);
 
+  // Fetch WordPress data
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.2 }
-    );
+    const fetchFocusAreasData = async () => {
+      try {
+        const wpData = await executeQuery(GET_FOCUS_AREAS_SECTION);
+        
+        if (wpData?.focusArea?.focusAreaFieldsType?.focusCards && wpData.focusArea.focusAreaFieldsType.focusCards.length > 0) {
+          const wpFocusCards = wpData.focusArea.focusAreaFieldsType.focusCards.map((card: any, index: number) => ({
+            id: index + 1,
+            title: card.title || focusData[index]?.title || `Focus Area ${index + 1}`,
+            desc: card.desc || focusData[index]?.desc || 'Focus area description',
+            metric: card.metric || focusData[index]?.metric || 'Impact metric',
+            icon: focusData[index]?.icon || <Target className="w-6 h-6" />,
+            color: focusData[index]?.color || "bg-core-blue",
+            glow: focusData[index]?.glow || "bg-[#4C1D95]/5",
+            shadow: focusData[index]?.shadow || "shadow-[0_20px_50px_rgba(76,29,149,0.3)]",
+            border: focusData[index]?.border || "group-hover:border-[#4C1D95]/40"
+          }));
+          
+          setFocusAreasData(wpFocusCards);
+        }
+      } catch (error) {
+        console.error('Error fetching WordPress Focus Areas data:', error);
+        // Keep fallback data
+      }
+    };
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    fetchFocusAreasData();
   }, []);
-
   return (
-    <section ref={sectionRef} className="pb-20 lg:pb-36 bg-white relative overflow-hidden">
-      <div className="container mx-auto px-8 md:px-16 lg:px-24 relative z-10">
+    <section className="py-32 bg-[#ffffff] text-slate-900 overflow-hidden relative">
+      
+      {/* Soft Background Accents */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#4C1D95]/5 rounded-full blur-[100px] -z-0" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#C2410C]/5 rounded-full blur-[100px] -z-0" />
+
+      <div className="container mx-auto px-6 relative z-10">
         
-        <div className={`mb-28 max-w-5xl mx-auto text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="flex items-center justify-center gap-6 mb-10">
-            <div className="h-[2px] w-16 bg-stone-100"></div>
-            <span className="text-terracotta font-black uppercase tracking-[0.6em] text-[10px]">Strategic Framework</span>
-            <div className="h-[2px] w-16 bg-stone-100"></div>
-          </div>
-          <h2 className="text-6xl md:text-7xl lg:text-8xl font-serif-impact text-deep-purple leading-[0.9] tracking-tighter">
-            Pillars of <span className="italic text-terracotta">Transformation.</span>
-          </h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-20 items-start">
-          {pillars.map((pillar, index) => (
-            <div 
-              key={pillar.id}
-              className={`group relative transition-all duration-1000 transform ${pillar.offset} ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-32'}`}
-              style={{ transitionDelay: `${index * 200}ms` }}
+        {/* Header Section */}
+        <div className="mb-24 flex flex-col lg:flex-row lg:items-end gap-8 justify-between border-b border-slate-100 pb-16">
+          <div className="flex-1">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-2 mb-6"
             >
-              {/* Ultra-Petal Shape Card */}
-              <div className={`relative bg-white p-16 lg:p-20 border-2 border-stone-50 ${pillar.accent} ${pillar.hoverBorder} rounded-tr-[160px] rounded-bl-[160px] shadow-[0_60px_120px_-30px_rgba(0,0,0,0.08)] ${pillar.glow} transition-all duration-700 h-full flex flex-col group-hover:-translate-y-4`}>
+              <div className="w-2 h-2 rounded-full bg-[#C2410C]" />
+              <span className="text-xs font-black uppercase tracking-[0.5em] text-slate-400">Strategic Framework</span>
+            </motion.div>
+            
+            <h2 className="text-5xl md:text-7xl lg:text-[110px] font-black tracking-tighter leading-none uppercase text-[#1e293b] whitespace-nowrap">
+              Pillars of <span className="text-impact-red italic font-serif lowercase px-2 lg:px-4">Impact.</span>
+            </h2>
+          </div>
+
+          <div className="max-w-[320px] lg:mb-4">
+            <div className="h-[2px] w-12 bg-[#D97706] mb-6 hidden lg:block" />
+            <p className="text-slate-500 text-sm md:text-base leading-relaxed font-medium opacity-80">
+              Nurturing rural potential through education, healthcare, and economic empowerment initiatives.
+            </p>
+          </div>
+        </div>
+
+        {/* The Warp Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12"> {/* Increased gap for larger shadows */}
+          {focusAreasData.map((item, idx) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.15, duration: 0.8 }}
+              whileHover={{ scale: 1.02, rotateY: 5, rotateX: 2 }} 
+              className="group relative"
+              style={{ perspective: '1200px' }}
+            >
+              {/* DEEP PERMANENT SHADOW on the main card container */}
+              <div className={`h-full bg-white border border-slate-50 rounded-[2.5rem] p-10 flex flex-col justify-between transition-all duration-500 
+                ${item.border} 
+                shadow-[0_30px_70px_-15px_rgba(0,0,0,0.12),0_20px_40px_-20px_rgba(0,0,0,0.08)]
+                group-hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.18),0_30px_60px_-30px_rgba(0,0,0,0.22)]`}
+              >
                 
-                <div className="flex-grow">
-                  <div className={`w-16 h-16 rounded-[24px] ${pillar.color} mb-10 flex items-center justify-center text-white shadow-xl transform group-hover:rotate-12 transition-transform`}>
-                    <span className="text-2xl font-black">0{pillar.id}</span>
+                <div className={`absolute inset-0 ${item.glow} opacity-0 group-hover:opacity-100 rounded-[2.5rem] transition-opacity duration-500 -z-10`} />
+
+                <div>
+                  {/* Constant Deep Brand Shadow for Icons */}
+                  <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mb-10 ${item.shadow} group-hover:rotate-[360deg] transition-transform duration-1000 ease-in-out`}>
+                    <div className="text-white">
+                      {item.icon}
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <h3 className="text-4xl font-bold tracking-tighter text-slate-800 transition-colors group-hover:text-slate-900">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-500 text-lg leading-relaxed font-light">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-12 flex items-center justify-between">
+                  {/* Elevated footer metric box */}
+                  <div className="px-5 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-0.5">Reach</span>
+                    <span className="text-sm font-bold text-slate-700 uppercase">{item.metric}</span>
                   </div>
                   
-                  <h3 className="text-4xl font-black text-deep-purple mb-8 leading-tight tracking-tight transition-colors duration-500 group-hover:text-black">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-stone-500 text-xl leading-relaxed font-bold mb-14 opacity-70 group-hover:opacity-100 transition-opacity">
-                    {pillar.description}
-                  </p>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-lg text-slate-400  transition-all duration-500`}>
+                    <ArrowUpRight className="w-5 h-5" />
+                  </div>
                 </div>
 
-                <div className="pt-12 mt-auto border-t border-stone-100 flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest mb-2">Metrics</span>
-                    <span className={`text-lg font-black ${pillar.textColor} tracking-tight`}>{pillar.impact}</span>
-                  </div>
-                  <div className="w-14 h-14 rounded-2xl bg-stone-50 flex items-center justify-center group-hover:bg-deep-purple group-hover:text-vibrant-gold transition-all duration-500 shadow-sm">
-                    <svg className="w-6 h-6 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </div>
-                </div>
+                {/* Bottom Line Accent */}
+                <div className={`absolute bottom-0 left-12 right-12 h-[3px] bg-gradient-to-r ${item.color} opacity-20 group-hover:opacity-100 transition-all duration-500 rounded-full`} />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-
-      {/* Background Accent */}
-      <div className="absolute top-1/2 left-0 w-full h-[1px] bg-stone-100 -z-10"></div>
     </section>
   );
 };
