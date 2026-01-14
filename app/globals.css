@@ -1,0 +1,656 @@
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* RWUA Color Palette */
+  --rwua-primary: #2563eb;
+  --rwua-primary-dark: #1d4ed8;
+  --rwua-secondary: #059669;
+  --rwua-secondary-dark: #047857;
+  --rwua-accent: #dc2626;
+  --rwua-neutral-50: #f9fafb;
+  --rwua-neutral-100: #f3f4f6;
+  --rwua-neutral-200: #e5e7eb;
+  --rwua-neutral-300: #d1d5db;
+  --rwua-neutral-400: #9ca3af;
+  --rwua-neutral-500: #6b7280;
+  --rwua-neutral-600: #4b5563;
+  --rwua-neutral-700: #374151;
+  --rwua-neutral-800: #1f2937;
+  
+  /* Next.js default variables */
+  --background: #ffffff;
+  --foreground: #171717;
+  --rwua-neutral-900: #111827;
+  
+  /* Background and foreground */
+  --background: #ffffff;
+  --foreground: var(--rwua-neutral-800);
+  
+  /* Responsive breakpoints */
+  --mobile-max: 767px;
+  --tablet-min: 768px;
+  --tablet-max: 1023px;
+  --desktop-min: 1024px;
+  --large-desktop-min: 1440px;
+  
+  /* Touch target sizes */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  
+  /* RWUA Custom Colors */
+  --color-rwua-primary: var(--rwua-primary);
+  --color-rwua-primary-dark: var(--rwua-primary-dark);
+  --color-rwua-secondary: var(--rwua-secondary);
+  --color-rwua-secondary-dark: var(--rwua-secondary-dark);
+  --color-rwua-accent: var(--rwua-accent);
+  --color-rwua-neutral-50: var(--rwua-neutral-50);
+  --color-rwua-neutral-100: var(--rwua-neutral-100);
+  --color-rwua-neutral-200: var(--rwua-neutral-200);
+  --color-rwua-neutral-300: var(--rwua-neutral-300);
+  --color-rwua-neutral-400: var(--rwua-neutral-400);
+  --color-rwua-neutral-500: var(--rwua-neutral-500);
+  --color-rwua-neutral-600: var(--rwua-neutral-600);
+  --color-rwua-neutral-700: var(--rwua-neutral-700);
+  --color-rwua-neutral-800: var(--rwua-neutral-800);
+  --color-rwua-neutral-900: var(--rwua-neutral-900);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+/* RWUA Typography with responsive scaling */
+.rwua-heading-1 {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--rwua-neutral-800);
+}
+
+.rwua-heading-2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--rwua-neutral-800);
+}
+
+.rwua-heading-3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--rwua-neutral-700);
+}
+
+.rwua-body {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--rwua-neutral-600);
+}
+
+.rwua-body-small {
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--rwua-neutral-500);
+}
+
+/* Responsive utilities */
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-responsive {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    padding: 0 2rem;
+  }
+}
+
+/* Touch-friendly interactive elements */
+.touch-target {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+}
+
+.touch-target-comfortable {
+  min-height: var(--touch-target-comfortable);
+  min-width: var(--touch-target-comfortable);
+}
+
+/* Responsive grid utilities */
+.grid-responsive-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid-responsive-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Responsive text truncation */
+.text-responsive-truncate {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-responsive-truncate-2 {
+  -webkit-line-clamp: 2;
+}
+
+.text-responsive-truncate-3 {
+  -webkit-line-clamp: 3;
+}
+
+/* Orientation-specific styles */
+@media (orientation: portrait) {
+  .portrait-stack {
+    flex-direction: column;
+  }
+  
+  .portrait-full-width {
+    width: 100%;
+  }
+}
+
+@media (orientation: landscape) {
+  .landscape-row {
+    flex-direction: row;
+  }
+  
+  .landscape-split {
+    width: 50%;
+  }
+}
+
+/* Focus styles for accessibility */
+.focus-visible:focus-visible {
+  outline: 2px solid var(--rwua-primary);
+  outline-offset: 2px;
+}
+
+/* Skip link styles */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only:focus,
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Enhanced focus styles for better visibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--rwua-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* High contrast button styles */
+.btn-primary {
+  background-color: var(--rwua-primary);
+  color: white;
+  border: 2px solid var(--rwua-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: var(--rwua-primary-dark);
+  border-color: var(--rwua-primary-dark);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--rwua-primary);
+  outline-offset: 2px;
+}
+
+/* Improved color contrast for text */
+.text-high-contrast {
+  color: var(--rwua-neutral-900);
+}
+
+.text-medium-contrast {
+  color: var(--rwua-neutral-700);
+}
+
+.text-low-contrast {
+  color: var(--rwua-neutral-600);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .rwua-heading-1,
+  .rwua-heading-2,
+  .rwua-heading-3 {
+    color: var(--rwua-neutral-900);
+  }
+  
+  .rwua-body {
+    color: var(--rwua-neutral-800);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Line clamp utilities for text truncation */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Navigation Menu Styles */
+.nav-link {
+  position: relative;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.nav-link::before {
+  content: "";
+  position: absolute;
+  width: 0px;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: #ffffff;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out 0s;
+}
+
+/* Active state for current page */
+.nav-link.active {
+  color: #fff !important;
+}
+
+.nav-link.active::before {
+  visibility: visible;
+  width: 100%;
+}
+
+/* Hover states - these override active when hovering */
+.nav-link:hover,
+.nav-link:focus,
+.group:hover .nav-link {
+  color: #fff !important;
+}
+
+.nav-link:hover::before,
+.nav-link:focus::before,
+.group:hover .nav-link::before {
+  visibility: visible;
+  width: 100%;
+}
+
+/* When hovering any nav item, hide active states on other items */
+nav:hover .nav-link.active:not(:hover) {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+nav:hover .nav-link.active:not(:hover)::before {
+  visibility: hidden;
+  width: 0px;
+}
+
+/* When hovering mega menu group, hide active states on other items */
+nav:hover .group:not(:hover) .nav-link.active {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+nav:hover .group:not(:hover) .nav-link.active::before {
+  visibility: hidden;
+  width: 0px;
+}
+
+/* Prevent accidental hover triggers */
+.group {
+  position: relative;
+}
+
+.group:hover > .nav-link {
+  color: #fff !important;
+}
+
+/* More precise hover control for mega menu */
+.hover-precise {
+  display: inline-block;
+}
+
+.hover-precise:hover .nav-link {
+  color: #fff !important;
+}
+
+.hover-precise:hover .nav-link::before {
+  visibility: visible;
+  width: 100%;
+}
+
+/* Ensure mega menu parent stays active when hovering submenu */
+.hover-precise:hover .nav-link,
+.hover-precise .nav-link:hover {
+  color: #fff !important;
+}
+
+.hover-precise:hover .nav-link::before,
+.hover-precise .nav-link:hover::before {
+  visibility: visible;
+  width: 100%;
+}
+
+/* Middle Navigation Menu Styles */
+.middle-nav-link {
+  position: relative;
+}
+
+.middle-nav-link::before {
+  content: "";
+  position: absolute;
+  width: 0px;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: #dc3545;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+.middle-nav-link:hover {
+  color: #dc3545 !important;
+}
+
+.middle-nav-link:hover::before {
+  visibility: visible;
+  width: 100%;
+}
+
+/* Logo Styles */
+.logo {
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  max-height: 80px;
+  max-width: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  vertical-align: middle;
+  border-style: none;
+}
+
+/* Animated Mega Menu Styles */
+.mega-menu-container {
+  min-width: 600px;
+  transform-origin: top center;
+}
+
+.mega-menu-arrow {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: white;
+  box-shadow: -3px -3px 5px rgba(80, 90, 120, 0.05);
+  border-radius: 2px 0 0 0;
+  z-index: 10;
+}
+
+.mega-menu-content {
+  transform: rotateX(-15deg);
+  transform-origin: top center;
+  transition: all 0.3s ease-out;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.group:hover .mega-menu-content {
+  transform: rotateX(0deg);
+}
+
+.mega-menu-section {
+  min-width: 250px;
+}
+
+.mega-menu-item {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.mega-menu-item:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced hover effects for mega menu */
+.hover-precise:hover .mega-menu-container {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) rotateX(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotateX(0deg);
+  }
+}
+
+/* Infinite scrolling animation for partner logos */
+@keyframes scroll-rtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-rtl {
+  animation: scroll-rtl 30s linear infinite;
+}
+
+.animate-scroll-rtl:hover {
+  animation-play-state: paused;
+}
+
+/* Modern Navbar Styles */
+.modern-nav-backdrop {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modern-nav-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Smooth transitions for all interactive elements */
+.modern-nav-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-nav-item:hover {
+  transform: translateY(-1px);
+}
+
+/* Mega menu animations */
+.modern-mega-menu {
+  transform: translateY(-10px) scale(0.95);
+  transform-origin: top center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group:hover .modern-mega-menu {
+  transform: translateY(0) scale(1);
+}
+
+/* Mobile menu animations */
+.modern-mobile-menu {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dropdown arrow animation */
+.modern-dropdown-arrow {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus styles for modern navbar */
+.modern-nav-focus:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Hover effects for menu items */
+.modern-menu-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-menu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.modern-menu-item:hover::before {
+  left: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .modern-mega-menu {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Loading animation for logo */
+.logo-loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
