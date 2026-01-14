@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { Calendar, MapPin, Building, ExternalLink, Clock } from 'lucide-react';
 import { Vacancy } from '@/lib/data';
+import WordPressImage from '../WordPressImage';
 import ApplicationForm from './ApplicationForm';
 
 interface ModernVacancyCardProps {
@@ -11,10 +11,17 @@ interface ModernVacancyCardProps {
 }
 
 export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
-  const [imageError, setImageError] = useState(false);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
 
-  const getTagColor = (tag: string) => {
+  const getJobCategoryColor = (category: string | string[]) => {
+    // Handle both array and string types
+    const value = Array.isArray(category) ? category[0] : category;
+    
+    // Safety check for valid string
+    if (!value || typeof value !== "string") {
+      return "bg-gray-100 text-gray-800";
+    }
+    
     const colors: { [key: string]: string } = {
       'management': 'bg-blue-100 text-blue-700',
       'finance': 'bg-green-100 text-green-700',
@@ -38,9 +45,13 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
       'advocacy': 'bg-stone-100 text-stone-700',
       'education': 'bg-green-100 text-green-700',
       'coordination': 'bg-blue-100 text-blue-700',
-      'literacy': 'bg-purple-100 text-purple-700'
+      'literacy': 'bg-purple-100 text-purple-700',
+      'programs': 'bg-blue-100 text-blue-700',
+      'field operations': 'bg-orange-100 text-orange-700',
+      'm&e': 'bg-purple-100 text-purple-700'
     };
-    return colors[tag] || 'bg-gray-100 text-gray-700';
+    
+    return colors[value.toLowerCase()] || 'bg-gray-100 text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -64,7 +75,8 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
   const isUrgent = daysRemaining <= 7 && daysRemaining > 0 && vacancy.status === 'open';
   const isExpired = vacancy.status === 'closed';
 
-  const getDepartmentGradient = (department: string) => {
+  const getDepartmentGradient = (department: string | string[]) => {
+    const value = Array.isArray(department) ? department[0] : department;
     const gradients: { [key: string]: string } = {
       'Programs': 'from-blue-500 to-purple-500',
       'Finance': 'from-green-400 to-blue-500',
@@ -72,7 +84,7 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
       'M&E': 'from-purple-500 to-pink-500',
       'Communications': 'from-red-400 to-pink-500'
     };
-    return gradients[department] || 'from-gray-400 to-gray-600';
+    return gradients[value] || 'from-gray-400 to-gray-600';
   };
 
   return (
@@ -80,29 +92,32 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
       <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group border border-gray-100">
         {/* Image Section - Smaller */}
         <div className="relative h-32 overflow-hidden">
-          {vacancy.image && !imageError ? (
-            <Image
-              src={vacancy.image}
-              alt={vacancy.position}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={() => setImageError(true)}
-            />
+          {vacancy.image ? (
+            <div className="relative w-full h-full">
+              <WordPressImage
+                src={vacancy.image}
+                alt={vacancy.position}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                onError={() => console.log(`Failed to load image for vacancy: ${vacancy.position}`)}
+              />
+            </div>
           ) : (
-            <div className={`w-full h-full bg-gradient-to-r ${getDepartmentGradient(vacancy.department)} flex items-center justify-center`}>
+            <div className={`w-full h-full bg-gradient-to-r ${getDepartmentGradient(vacancy.jobCategory)} flex items-center justify-center`}>
               <div className="text-white text-center">
                 <div className="w-10 h-10 mx-auto mb-1 bg-white/20 rounded-full flex items-center justify-center">
                   <Building className="w-5 h-5" />
                 </div>
-                <p className="text-xs font-medium">{vacancy.department}</p>
+                <p className="text-xs font-medium">{Array.isArray(vacancy.jobCategory) ? vacancy.jobCategory[0] : vacancy.jobCategory}</p>
               </div>
             </div>
           )}
           
-          {/* Department Badge */}
+          {/* Employment Type Badge */}
           <div className="absolute top-2 left-2">
             <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-800 rounded-full text-xs font-medium">
-              {vacancy.department}
+              {vacancy.employmentType}
             </span>
           </div>
 
@@ -140,6 +155,21 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
             {vacancy.description.length > 80 ? vacancy.description.substring(0, 80) + '...' : vacancy.description}
           </p>
 
+          {/* Job Category Tags */}
+          <div className="mb-3 flex flex-wrap gap-1">
+            {Array.isArray(vacancy.jobCategory) ? (
+              vacancy.jobCategory.map((category, idx) => (
+                <span key={idx} className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getJobCategoryColor(category)}`}>
+                  {category}
+                </span>
+              ))
+            ) : (
+              <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getJobCategoryColor(vacancy.jobCategory)}`}>
+                {vacancy.jobCategory}
+              </span>
+            )}
+          </div>
+
           {/* Details - Compact */}
           <div className="space-y-1 mb-3">
             <div className="flex items-center text-xs text-gray-600">
@@ -152,17 +182,7 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
             </div>
           </div>
 
-          {/* Tags - Only 2 tags */}
-          <div className="flex flex-wrap gap-1 mb-3">
-            {vacancy.tags.slice(0, 2).map((tag) => (
-              <span
-                key={tag}
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getTagColor(tag)}`}
-              >
-                {tag.charAt(0).toUpperCase() + tag.slice(1)}
-              </span>
-            ))}
-          </div>
+
 
           {/* Footer */}
           <div className="flex justify-between items-center">
@@ -176,21 +196,26 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
               </span>
             </div>
 
-            {/* Apply Button */}
-            <button 
-              onClick={() => setShowApplicationForm(true)}
-              className={`flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                isExpired 
-                  ? 'bg-stone-200 text-stone-500 cursor-not-allowed' 
-                  : 'bg-deep-purple text-white hover:bg-black hover:shadow-md cursor-pointer'
-              }`}
-              disabled={isExpired}
-            >
-              <span>{isExpired ? 'Closed' : 'Apply'}</span>
-              {!isExpired && (
+            {/* Apply Button or Closed Badge */}
+            {isExpired ? (
+              <div className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
+                Closed
+              </div>
+            ) : (
+              <button 
+                onClick={() => {
+                  if (vacancy.applyUrl) {
+                    window.open(vacancy.applyUrl, '_blank');
+                  } else {
+                    setShowApplicationForm(true);
+                  }
+                }}
+                className="flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 bg-core-blue text-white hover:bg-core-blue-light hover:shadow-md cursor-pointer transform hover:scale-105"
+              >
+                <span>Apply</span>
                 <ExternalLink className="w-3 h-3 ml-1" />
-              )}
-            </button>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -200,7 +225,7 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
         vacancy={{
           id: vacancy.id,
           position: vacancy.position,
-          department: vacancy.department
+          department: vacancy.jobCategory
         }}
         isOpen={showApplicationForm}
         onClose={() => setShowApplicationForm(false)}
