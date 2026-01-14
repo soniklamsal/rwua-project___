@@ -13,6 +13,7 @@
     "@faustwp/cli": "^3.3.4",
     "@faustwp/core": "^3.3.4",
     "@fortawesome/fontawesome-free": "^7.1.0",
+    "framer-motion": "^12.26.2",
     "graphql": "^16.12.0",
     "gsap": "^3.14.2",
     "lucide-react": "^0.562.0",
