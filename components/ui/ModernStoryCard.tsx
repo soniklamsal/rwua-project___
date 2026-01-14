@@ -1,17 +1,28 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, User, Tag, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
 import { SuccessStory } from '@/lib/data';
+import WordPressImage from '../WordPressImage';
 
 interface ModernStoryCardProps {
   story: SuccessStory;
 }
 
 export default function ModernStoryCard({ story }: ModernStoryCardProps) {
-  const [imageError, setImageError] = useState(false);
+
+  // Helper function to clean HTML content
+  const cleanDescription = (htmlContent: string) => {
+    return htmlContent
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+      .replace(/&amp;/g, '&') // Replace &amp; with &
+      .replace(/&lt;/g, '<') // Replace &lt; with <
+      .replace(/&gt;/g, '>') // Replace &gt; with >
+      .replace(/&quot;/g, '"') // Replace &quot; with "
+      .trim();
+  };
 
   const getTagColor = (tag: string) => {
     const colors: { [key: string]: string } = {
@@ -46,22 +57,25 @@ export default function ModernStoryCard({ story }: ModernStoryCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group border border-gray-100">
       {/* Image Section - Smaller */}
-      <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500 overflow-hidden">
-        {!imageError ? (
-          <Image
-            src={story.image}
-            alt={story.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={() => setImageError(true)}
-          />
+      <div className="relative h-32 overflow-hidden">
+        {story.image ? (
+          <div className="relative w-full h-full">
+            <WordPressImage
+              src={story.image}
+              alt={story.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={() => console.log(`Failed to load image for story: ${story.title}`)}
+            />
+          </div>
         ) : (
           <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
             <div className="text-white text-center">
-              <div className="w-10 h-10 mx-auto mb-1 bg-white/20 rounded-full flex items-center justify-center">
-                <Tag className="w-5 h-5" />
-              </div>
-              <p className="text-xs font-medium">{story.category}</p>
+              <svg className="w-12 h-12 mx-auto mb-2 opacity-70" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+              </svg>
+              <p className="text-xs opacity-70">{story.category}</p>
             </div>
           </div>
         )}
@@ -83,7 +97,7 @@ export default function ModernStoryCard({ story }: ModernStoryCardProps) {
 
         {/* Description - Much shorter */}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
-          {story.description.length > 80 ? story.description.substring(0, 80) + '...' : story.description}
+          {cleanDescription(story.description).length > 80 ? cleanDescription(story.description).substring(0, 80) + '...' : cleanDescription(story.description)}
         </p>
 
         {/* Tags - Only 2 tags */}
@@ -109,7 +123,7 @@ export default function ModernStoryCard({ story }: ModernStoryCardProps) {
           {/* Read More Button - Better design */}
           <Link
             href={`/success-story/${story.id}`}
-            className="inline-flex items-center text-deep-purple hover:text-white text-sm font-medium transition-all duration-300 hover:bg-deep-purple px-3 py-1.5 rounded-full border border-deep-purple/20 hover:border-deep-purple group hover:shadow-md cursor-pointer"
+            className="inline-flex items-center text-core-blue hover:text-white text-sm font-medium transition-all duration-300 hover:bg-core-blue px-3 py-1.5 rounded-full border border-core-blue/20 hover:border-core-blue group hover:shadow-md cursor-pointer"
           >
             <span>Read More</span>
             <ChevronRight className="w-3 h-3 ml-1 transition-transform group-hover:translate-x-1" />

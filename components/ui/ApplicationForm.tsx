@@ -90,7 +90,7 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
 
         {/* Header - More compact */}
         <h2 className="text-lg font-semibold text-gray-800 mb-3 pr-8">
-          <span className="text-blue-600 font-bold">Apply for {vacancy.position}</span>
+          <span className="text-core-blue font-bold">Apply for {vacancy.position}</span>
         </h2>
         <p className="text-sm text-gray-600 mb-4">Please fill out the form below to submit your application.</p>
 
@@ -161,7 +161,7 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-2.5 text-white bg-deep-purple rounded-md hover:bg-black transition flex items-center justify-center space-x-2 text-sm font-bold ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            className={`w-full py-2.5 text-white bg-core-blue rounded-md hover:bg-core-blue-light transition-all duration-300 flex items-center justify-center space-x-2 text-sm font-bold ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
           >
             {isSubmitting ? (
