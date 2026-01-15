@@ -256,6 +256,7 @@ export const About: React.FC = () => {
                   <img 
                     src={card.url} 
                     alt={card.title || "Mission focus"} 
+                    loading="lazy"
                     className="w-full h-full object-cover rounded-2xl grayscale-[15%] transition-all duration-700"
                     draggable={false}
                   />

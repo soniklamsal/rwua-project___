@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { executeQuery } from '@/lib/wordpress/client';
 
-// WordPress query
+// WordPress queries
 const GET_PARTNER_LOGOS = `
   query GetPartnerLogos {
     partners {
@@ -26,6 +26,23 @@ const GET_PARTNER_LOGOS = `
   }
 `;
 
+const GET_IMPACT_STATS = `
+  query GetImpactStats {
+    impactstats {
+      nodes {
+        id
+        title
+        impactStatsFields {
+          statsList {
+            statValue
+            statLabel
+          }
+        }
+      }
+    }
+  }
+`;
+
 // Fallback data
 const partners = [
   { name: 'Past Partners', url: 'https://rwua.com.np/wp-content/uploads/2024/04/SC_USA_Logo_RedBlack_Stacked-003-150x150-1.png', id: '1' },
@@ -38,18 +55,21 @@ const partners = [
 
 export const PartnerSection: React.FC = () => {
   const [activePartnerId, setActivePartnerId] = useState<string | null>(null);
-  const [count, setCount] = useState(0);
+  const [counts, setCounts] = useState<number[]>([0, 0, 0]);
   const [isVisible, setIsVisible] = useState(false);
   const [partnersData, setPartnersData] = useState<any[]>(partners);
-  const [loading, setLoading] = useState(true);
-  const targetCount = 5120;
+  const [statsData, setStatsData] = useState<any[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
   // Fetch WordPress data
   useEffect(() => {
-    const fetchPartnersData = async () => {
+    const fetchData = async () => {
       try {
+        console.log('=== Starting data fetch ===');
+        
+        // Fetch partners
         const wpData = await executeQuery(GET_PARTNER_LOGOS);
+        console.log('Partners data:', wpData);
         
         if (wpData?.partners?.nodes?.[0]?.partnerFields?.partnersList) {
           const wpPartners = wpData.partners.nodes[0].partnerFields.partnersList
@@ -62,19 +82,57 @@ export const PartnerSection: React.FC = () => {
           
           setPartnersData(wpPartners);
         } else {
-          // Only use fallback if WordPress returns no data
           setPartnersData(partners);
         }
+
+        // Fetch stats - Try multiple approaches
+        console.log('=== Fetching stats ===');
+        
+        // First try the full query
+        let statsResponse = await executeQuery(GET_IMPACT_STATS);
+        console.log('Raw stats response:', JSON.stringify(statsResponse, null, 2));
+        
+        // Check if data exists
+        if (statsResponse?.impactstats?.nodes && statsResponse.impactstats.nodes.length > 0) {
+          console.log('Found impactstats nodes:', statsResponse.impactstats.nodes.length);
+          
+          const firstNode = statsResponse.impactstats.nodes[0];
+          console.log('First node:', firstNode);
+          console.log('First node keys:', Object.keys(firstNode || {}));
+          
+          // Try different possible field names
+          let statsList = null;
+          
+          if (firstNode?.impactStatsFields?.statsList) {
+            statsList = firstNode.impactStatsFields.statsList;
+            console.log('✅ Found stats in impactStatsFields');
+          } else if (firstNode?.titlestatsFieldsData?.statsList) {
+            statsList = firstNode.titlestatsFieldsData.statsList;
+            console.log('✅ Found stats in titlestatsFieldsData');
+          } else if (firstNode?.statsFields?.statsList) {
+            statsList = firstNode.statsFields.statsList;
+            console.log('✅ Found stats in statsFields');
+          }
+          
+          if (statsList && statsList.length > 0) {
+            console.log('✅ Successfully fetched stats:', statsList);
+            setStatsData(statsList);
+            setCounts(new Array(statsList.length).fill(0));
+          } else {
+            console.warn('❌ statsList not found in any expected location');
+            console.log('Available fields in first node:', Object.keys(firstNode || {}));
+          }
+        } else {
+          console.warn('❌ No impactstats nodes found');
+          console.log('Available keys in response:', Object.keys(statsResponse || {}));
+        }
       } catch (error) {
-        console.error('Error fetching WordPress Partners data:', error);
-        // Only use fallback if WordPress is completely unavailable
+        console.error('❌ Error fetching WordPress data:', error);
         setPartnersData(partners);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchPartnersData();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -90,24 +148,39 @@ export const PartnerSection: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || statsData.length === 0) return;
 
-    let start = 0;
-    const duration = 2000;
-    const increment = Math.ceil(targetCount / (duration / 16));
+    const timers: NodeJS.Timeout[] = [];
     
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= targetCount) {
-        setCount(targetCount);
-        clearInterval(timer);
-      } else {
-        setCount(start);
-      }
-    }, 16);
+    statsData.forEach((stat, index) => {
+      const targetValue = parseInt(stat.statValue.replace(/[^0-9]/g, '')) || 0;
+      let start = 0;
+      const duration = 2000;
+      const increment = Math.ceil(targetValue / (duration / 16));
+      
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= targetValue) {
+          setCounts(prev => {
+            const newCounts = [...prev];
+            newCounts[index] = targetValue;
+            return newCounts;
+          });
+          clearInterval(timer);
+        } else {
+          setCounts(prev => {
+            const newCounts = [...prev];
+            newCounts[index] = start;
+            return newCounts;
+          });
+        }
+      }, 16);
 
-    return () => clearInterval(timer);
-  }, [isVisible, targetCount]);
+      timers.push(timer);
+    });
+
+    return () => timers.forEach(timer => clearInterval(timer));
+  }, [isVisible, statsData]);
 
   const handlePartnerClick = (id: string) => {
     setActivePartnerId(prev => prev === id ? null : id);
@@ -141,6 +214,7 @@ export const PartnerSection: React.FC = () => {
             <img 
               src={partner.url} 
               alt={partner.name}
+              loading="lazy"
               className={`max-w-full max-h-full object-contain transition-all duration-700
                 ${isActive 
                   ? 'grayscale-0 opacity-100' 
@@ -169,33 +243,7 @@ export const PartnerSection: React.FC = () => {
     <section ref={sectionRef} className="pb-24 bg-white border-t border-stone-50 overflow-hidden">
       <div className="container mx-auto px-8 md:px-16 mb-10">
         {/* Statistics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-24 items-center mb-24">
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <div className="text-impact-red text-7xl lg:text-8xl font-black tracking-tighter mb-4">
-              {count.toLocaleString()}+
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-[2px] bg-deep-purple"></div>
-              <span className="text-black text-xs font-black uppercase tracking-[0.3em]">Lives Empowered</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center md:items-start text-center md:text-left border-y md:border-y-0 md:border-x border-stone-100 py-12 md:py-0 md:px-12 lg:px-24">
-            <div className="text-core-blue text-6xl lg:text-7xl font-black tracking-tighter mb-4">442</div>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-[2px] bg-stone-200"></div>
-              <span className="text-black text-xs font-black uppercase tracking-[0.3em]">Blankets Provided</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center md:items-start text-center md:text-left border-y md:border-y-0 md:border-x border-stone-100 py-12 md:py-0 md:px-12 lg:px-24">
-            <div className="text-flash-yellow text-6xl lg:text-7xl font-black tracking-tighter mb-4">SDG</div>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-[2px] bg-stone-200"></div>
-              <span className="text-black text-xs font-black uppercase tracking-[0.3em]">Policy Aligned</span>
-            </div>
-          </div>
-        </div>
+      
 
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-6 mb-16">

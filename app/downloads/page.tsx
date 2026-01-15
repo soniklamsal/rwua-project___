@@ -80,7 +80,7 @@ export default function DownloadsPage() {
               return {
                 id: (index + 1).toString(),
                 title: resource.title || `Resource ${index + 1}`,
-                category: typeof fields.category === 'string' ? fields.category.trim() : 'General',
+                category: fields.category || 'General',
                 size: formatFileSize(file.fileSize),
                 type: getFileType(file.mimeType),
                 date: formatDate(fields.releaseDate),

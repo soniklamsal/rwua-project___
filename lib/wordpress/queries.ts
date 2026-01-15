@@ -203,6 +203,22 @@ export const GET_PARTNER_LOGOS = `
   }
 `;
 
+export const GET_IMPACT_STATS = `
+  query GetImpactStats {
+    impactstats {
+      nodes {
+        title
+        statsFieldsData {
+          statsList {
+            statValue
+            statLabel
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_LATEST_NEWS = `
   query GetLatestNews {
     posts(first: 3, where: { orderby: { field: DATE, order: DESC } }) {
