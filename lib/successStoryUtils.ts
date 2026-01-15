@@ -75,6 +75,8 @@ export function filterSuccessStoryPosts(posts: WordPressSuccessStoryPost[]): Wor
 // Transform WordPress post to SuccessStory format with proper WordPress image handling
 export function transformToSuccessStory(post: WordPressSuccessStoryPost): SuccessStory {
   console.log(`🔄 Transforming success story: "${post.title}"`);
+  console.log(`📝 Content length: ${post.content?.length || 0}`);
+  console.log(`📝 Excerpt length: ${post.excerpt?.length || 0}`);
   
   // Get the featured image URL from WordPress
   let imageUrl = '';
@@ -119,10 +121,14 @@ export function transformToSuccessStory(post: WordPressSuccessStoryPost): Succes
     ?.filter(cat => cat.name !== 'Success Stories' && !cat.name.toLowerCase().includes('success stories'))
     .map(cat => cat.name) || [];
   
+  // Use content if available, otherwise use excerpt
+  const description = post.content || post.excerpt || '';
+  console.log(`📄 Using description (${description.length} chars):`, description.substring(0, 100));
+  
   const transformed = {
     id: post.slug,
     title: post.title,
-    description: post.content || post.excerpt?.replace(/<[^>]*>/g, '') || '',
+    description: description,
     category: categoryName,
     author: post.author?.node?.name || 'RWUA Team',
     image: imageUrl,
@@ -133,7 +139,8 @@ export function transformToSuccessStory(post: WordPressSuccessStoryPost): Succes
   console.log(`✅ Success story transformed:`, {
     title: transformed.title,
     hasImage: !!transformed.image,
-    imageUrl: transformed.image
+    imageUrl: transformed.image,
+    descriptionLength: transformed.description.length
   });
   
   return transformed;

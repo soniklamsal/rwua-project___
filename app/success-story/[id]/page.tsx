@@ -2,35 +2,44 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
+import { useQuery } from '@apollo/client';
 import Link from 'next/link';
-import { successStories, SuccessStory } from '@/lib/data';
+import { SuccessStory } from '@/lib/data';
+import { GET_SUCCESS_STORY_BY_SLUG } from '@/lib/successStoryQueries';
+import { transformToSuccessStory, WordPressSuccessStoryPost } from '@/lib/successStoryUtils';
+import WordPressImage from '@/components/WordPressImage';
 
 export default function StoryDetailPage() {
   const params = useParams();
+  const rawSlug = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  // Decode the URL-encoded slug (important for Nepali/Unicode characters)
+  const slug = rawSlug ? decodeURIComponent(rawSlug) : undefined;
   const [story, setStory] = useState<SuccessStory | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
+  const { loading, error, data } = useQuery(GET_SUCCESS_STORY_BY_SLUG, {
+    variables: { slug },
+    skip: !slug,
+    fetchPolicy: 'network-only', // Always fetch fresh data
+    errorPolicy: 'all',
+  });
+
   useEffect(() => {
-    const loadStory = async () => {
-      setIsLoading(true);
-
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const storyId = params.id as string;
-      const foundStory = successStories.find(s => s.id === storyId);
-
-      if (foundStory) {
-        setStory(foundStory);
-      }
-
-      setIsLoading(false);
-    };
-
-    loadStory();
-  }, [params.id]);
+    console.log('🔍 Detail page - slug:', slug);
+    console.log('🔍 Detail page - loading:', loading);
+    console.log('🔍 Detail page - data:', data);
+    console.log('🔍 Detail page - error:', error);
+    
+    if (data?.postBy) {
+      console.log('✅ Post found, transforming...');
+      console.log('📄 Raw post data:', data.postBy);
+      const transformedStory = transformToSuccessStory(data.postBy as WordPressSuccessStoryPost);
+      console.log('✅ Transformed story:', transformedStory);
+      setStory(transformedStory);
+    } else if (data && !data.postBy) {
+      console.log('⚠️ Query returned but no post found for slug:', slug);
+    }
+  }, [data, error, slug, loading]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -41,7 +50,7 @@ export default function StoryDetailPage() {
     });
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12 px-4">
         <div className="max-w-4xl mx-auto">
@@ -62,7 +71,7 @@ export default function StoryDetailPage() {
     );
   }
 
-  if (!story) {
+  if (!story && !loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -71,9 +80,17 @@ export default function StoryDetailPage() {
               <span className="text-4xl text-gray-400">📖</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Story Not Found</h1>
-            <p className="text-gray-600 mb-8">
-              The success story you're looking for doesn't exist or has been moved.
+            <p className="text-gray-600 mb-4">
+              {error ? `Error: ${error.message}` : "The success story you're looking for doesn't exist or has been moved."}
             </p>
+            {slug && (
+              <div className="text-sm text-gray-500 mb-8 space-y-2">
+                <p>Looking for slug: <code className="bg-gray-200 px-2 py-1 rounded">{slug}</code></p>
+                {rawSlug !== slug && (
+                  <p className="text-xs">URL encoded: <code className="bg-gray-100 px-2 py-1 rounded text-xs">{rawSlug}</code></p>
+                )}
+              </div>
+            )}
             <Link
               href="/success-story"
               className="inline-flex items-center px-6 py-3 bg-core-blue text-white rounded-lg hover:bg-impact-red transition-colors"
@@ -87,8 +104,7 @@ export default function StoryDetailPage() {
     );
   }
 
-  // Get related stories (excluding current story)
-  const relatedStories = successStories.filter(s => s.id !== story.id).slice(0, 3);
+  if (!story) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -109,8 +125,8 @@ export default function StoryDetailPage() {
             {/* Left Column - Image */}
             <div className="relative">
               <div className="relative h-64 lg:h-80 bg-gradient-to-r from-core-blue to-impact-red rounded-lg overflow-hidden">
-                {!imageError ? (
-                  <Image
+                {story.image && !imageError ? (
+                  <WordPressImage
                     src={story.image}
                     alt={story.title}
                     fill
@@ -144,9 +160,10 @@ export default function StoryDetailPage() {
               </div>
 
               <div className="text-gray-700 leading-relaxed mb-6">
-                <p className="text-lg">
-                  {story.description.split('\n\n')[0]}
-                </p>
+                <div 
+                  className="text-lg prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: story.description.split('\n\n')[0] || story.description.substring(0, 300) }}
+                />
               </div>
             </div>
           </div>
@@ -154,45 +171,16 @@ export default function StoryDetailPage() {
           {/* Full Story Content */}
           <div className="px-8 pb-8">
             <div className="prose prose-lg max-w-none">
-              <div className="text-gray-700 leading-relaxed space-y-6">
-                {story.description.split('\n\n').slice(1).map((paragraph, index) => (
-                  <p key={index} className="text-base leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
+              {story.description ? (
+                <div 
+                  className="text-gray-700 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: story.description }}
+                />
+              ) : (
+                <p className="text-gray-500 italic">No content available for this story.</p>
+              )}
             </div>
           </div>
-
-          {/* Related Stories Section */}
-          {relatedStories.length > 0 && (
-            <div className="px-8 pb-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6">Related Stories</h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                {relatedStories.map((relatedStory) => (
-                  <div key={relatedStory.id} className="group">
-                    <Link href={`/success-story/${relatedStory.id}`}>
-                      <div className="relative h-40 bg-gradient-to-r from-core-blue to-impact-red rounded-lg overflow-hidden mb-3">
-                        <Image
-                          src={relatedStory.image}
-                          alt={relatedStory.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={() => {}}
-                        />
-                      </div>
-                      <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-core-blue transition-colors line-clamp-2">
-                        {relatedStory.title}
-                      </h4>
-                      <button className="inline-flex items-center px-4 py-2 bg-core-blue text-white text-sm font-medium rounded-lg hover:bg-impact-red transition-colors">
-                        Read More
-                      </button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </article>
       </div>
     </div>
