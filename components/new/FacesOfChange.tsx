@@ -7,7 +7,7 @@ import { SUCCESS_STORIES } from '@/lib/constants';
 
 const GET_SUCCESS_STORIES = `
   query GetSuccessStories {
-    posts(first: 3, where: { categoryName: "success-story", orderby: { field: DATE, order: DESC } }) {
+    posts(first: 3, where: { categoryName: "Success Stories", orderby: { field: DATE, order: DESC } }) {
       nodes {
         id
         title
