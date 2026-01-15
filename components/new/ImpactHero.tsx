@@ -20,7 +20,11 @@ const GET_IMPACT_HERO_DATA = `
           heroBadgeNum
           heroQuote
           heroVideoUrl
-          heroCtaPrimary
+          heroCtaPrimary {
+            target
+            title
+            url
+          }
           heroImage {
             node {
               sourceUrl
@@ -50,7 +54,11 @@ const fallbackData = {
   heroBadgeNum: "27",
   heroQuote: "Leadership is the seed; community is the harvest.",
   heroVideoUrl: "https://www.youtube.com/",
-  heroCtaPrimary: "/contact",
+  heroCtaPrimary: {
+    url: "/contact",
+    title: "Join the movement",
+    target: "_self"
+  },
   heroImage: {
     node: {
       sourceUrl: "/images/hero.png",
@@ -61,7 +69,7 @@ const fallbackData = {
 };
 
 export const ImpactHero: React.FC = () => {
-  const [heroData, setHeroData] = useState(fallbackData);
+  const [heroData, setHeroData] = useState<any>(fallbackData); // Start with fallback
 
   // Fetch WordPress data
   useEffect(() => {
@@ -74,7 +82,6 @@ export const ImpactHero: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching WordPress Impact Hero data:', error);
-        // Keep fallback data
       }
     };
 
@@ -124,10 +131,12 @@ export const ImpactHero: React.FC = () => {
               <button 
                 onClick={() => {
                   // Use WordPress CTA URL or fallback
-                  const ctaUrl = heroData.heroCtaPrimary || '/contact';
-                  if (ctaUrl.startsWith('http')) {
-                    // External URL
-                    window.open(ctaUrl, '_blank');
+                  const ctaUrl = heroData.heroCtaPrimary?.url || '/contact';
+                  const ctaTarget = heroData.heroCtaPrimary?.target || '_self';
+                  
+                  if (ctaUrl.startsWith('http') || ctaTarget === '_blank') {
+                    // External URL or open in new tab
+                    window.open(ctaUrl, ctaTarget);
                   } else {
                     // Internal URL
                     window.location.href = ctaUrl;
@@ -135,7 +144,7 @@ export const ImpactHero: React.FC = () => {
                 }}
                 className="bg-impact-red/80 hover:bg-impact-red text-white font-black py-6 px-14 rounded-2xl transition-all shadow-[0_30px_70px_-15px_rgba(1,0,250,0.35)] hover:scale-105 active:scale-95 text-[11px] uppercase tracking-[0.3em] cursor-pointer"
               >
-                Join the movement
+                {heroData.heroCtaPrimary?.title || 'Join the movement'}
               </button>
               <button 
                 onClick={() => {
@@ -162,6 +171,7 @@ export const ImpactHero: React.FC = () => {
                 <img 
                   src={heroData.heroImage?.node?.sourceUrl || heroData.heroImage?.node?.mediaItemUrl || "/images/hero.png"}
                   alt={heroData.heroImage?.node?.altText || "Rural Women Upliftment"}
+                  loading="lazy"
                   className="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 transition-all duration-1000 scale-110 hover:scale-100"
                   onError={(e) => {
                     // Fallback to static image if WordPress image fails

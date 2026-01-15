@@ -252,7 +252,7 @@ export default function ModernNavbar() {
                                                 <div className="space-y-4">
                                                     <h4 className="font-semibold text-gray-900 text-lg border-b border-gray-200 pb-2">Success Stories</h4>
                                                     <Link
-                                                        href="/news/success-stories"
+                                                        href="/success-story"
                                                         className="block p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
                                                         onClick={closeAllMenus}
                                                     >
@@ -263,17 +263,7 @@ export default function ModernNavbar() {
                                                         <p className="text-sm text-gray-600">उपलब्धि र सफलताका कथाहरू</p>
                                                     </Link>
 
-                                                    <Link
-                                                        href="/success-story"
-                                                        className="block p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
-                                                        onClick={closeAllMenus}
-                                                    >
-                                                        <div className="flex items-center mb-2">
-                                                            <Users className="w-5 h-5 text-purple-600 mr-2" />
-                                                            <span className="font-medium text-gray-900">Community Impact</span>
-                                                        </div>
-                                                        <p className="text-sm text-gray-600">समुदायमा हाम्रो प्रभाव</p>
-                                                    </Link>
+                                                  
                                                 </div>
 
                                                 {/* Column 3: Social Media & Archives */}

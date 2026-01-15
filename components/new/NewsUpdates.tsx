@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { executeQuery } from '@/lib/wordpress/client';
 import { NEWS_UPDATES } from '@/lib/constants';
 
@@ -32,8 +33,7 @@ const GET_LATEST_NEWS = `
 
 export const NewsUpdates: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [newsData, setNewsData] = useState<any[]>(NEWS_UPDATES);
-  const [loading, setLoading] = useState(true);
+  const [newsData, setNewsData] = useState<any[]>(NEWS_UPDATES.slice(0, 3)); // Start with fallback
   const sectionRef = useRef<HTMLElement>(null);
 
   // Fetch WordPress data
@@ -43,7 +43,7 @@ export const NewsUpdates: React.FC = () => {
         const wpData = await executeQuery(GET_LATEST_NEWS);
         
         if (wpData?.posts?.nodes && wpData.posts.nodes.length > 0) {
-          const wpNews = wpData.posts.nodes.map((post: any, index: number) => ({
+          const wpNews = wpData.posts.nodes.slice(0, 3).map((post: any, index: number) => ({
             id: post.id || (index + 1).toString(),
             title: post.title || `News Article ${index + 1}`,
             content: post.excerpt ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 'Read more about this news update...',
@@ -58,16 +58,9 @@ export const NewsUpdates: React.FC = () => {
           }));
           
           setNewsData(wpNews);
-        } else {
-          // Only use fallback if WordPress returns no data
-          setNewsData(NEWS_UPDATES);
         }
       } catch (error) {
         console.error('Error fetching WordPress News data:', error);
-        // Only use fallback if WordPress is completely unavailable
-        setNewsData(NEWS_UPDATES);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -108,21 +101,25 @@ export const NewsUpdates: React.FC = () => {
             </h2>
           </div>
           
-          <button className={`group flex items-center gap-4 text-deep-purple font-black text-xs uppercase tracking-[0.3em] transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <Link 
+            href="/news"
+            className={`group flex items-center gap-4 text-deep-purple font-black text-xs uppercase tracking-[0.3em] transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+          >
             <span className="border-b border-impact-red/20 group-hover:border-impact-red pb-1">All Vacancy & Press</span>
             <div className="w-10 h-10 rounded-full border border-impact-red/10 flex items-center justify-center group-hover:bg-impact-red group-hover:text-white transition-all">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </div>
-          </button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {newsData.map((news, index) => (
-            <div 
-              key={news.id} 
-              className={`group relative bg-white ring-1 ring-stone-100 p-12 lg:p-14 flex flex-col h-full transition-all duration-700 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-[0_40px_80px_-20px_rgba(76,29,149,0.12)] transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}
+            <Link
+              key={news.id}
+              href={news.slug ? `/post/${news.slug}` : '#'}
+              className={`group relative bg-white ring-1 ring-stone-100 p-12 lg:p-14 flex flex-col h-full transition-all duration-700 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-[0_40px_80px_-20px_rgba(76,29,149,0.12)] transform cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}
               style={{ 
                 transitionDelay: `${index * 150}ms`,
                 marginTop: `${index === 1 ? '2rem' : '0'}` 
@@ -136,6 +133,7 @@ export const NewsUpdates: React.FC = () => {
                   <img 
                     src={news.featuredImage} 
                     alt={news.title}
+                    loading="lazy"
                     className="w-full h-48 object-cover"
                     onError={(e) => {
                       // Hide image if it fails to load
@@ -168,10 +166,7 @@ export const NewsUpdates: React.FC = () => {
               </p>
 
               <div className="pt-8 mt-auto border-t border-stone-50">
-                <a 
-                  href={news.slug ? `/news/${news.slug}` : '#'} 
-                  className="inline-flex items-center gap-4 text-deep-purple font-black text-xs uppercase tracking-[0.3em] group/link"
-                >
+                <div className="inline-flex items-center gap-4 text-deep-purple font-black text-xs uppercase tracking-[0.3em] group/link">
                   <span className="relative">
                     Read Story
                     <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-terracotta transition-all duration-500 group-hover/link:w-full"></span>
@@ -181,13 +176,13 @@ export const NewsUpdates: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </div>
-                </a>
+                </div>
               </div>
 
               <div className="absolute bottom-0 right-0 w-12 h-12 overflow-hidden pointer-events-none">
                 <div className="absolute bottom-0 right-0 w-full h-full bg-vibrant-gold/5 transform rotate-45 translate-x-1/2 translate-y-1/2"></div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

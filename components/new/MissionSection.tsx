@@ -74,10 +74,30 @@ export const MissionSection: React.FC = () => {
         
         if (wpData?.missions?.nodes?.[0]?.missionFields) {
           setMissionData(wpData.missions.nodes[0].missionFields);
+        } else {
+          // Use fallback only if WordPress returns no data
+          setMissionData({
+            missionTitle1: "A Dignified",
+            missionTitleItalic: "Life for All.",
+            missionGoal: CORE_GOAL,
+            missionCards: STACK_IMAGES.map((img) => ({
+              cardLabel: img.title,
+              cardImage: { node: { sourceUrl: img.url } }
+            }))
+          });
         }
       } catch (error) {
         console.error('Error fetching WordPress Mission data:', error);
-        // Keep fallback data
+        // Use fallback on error
+        setMissionData({
+          missionTitle1: "A Dignified",
+          missionTitleItalic: "Life for All.",
+          missionGoal: CORE_GOAL,
+          missionCards: STACK_IMAGES.map((img) => ({
+            cardLabel: img.title,
+            cardImage: { node: { sourceUrl: img.url } }
+          }))
+        });
       } finally {
         setLoading(false);
       }
@@ -88,6 +108,8 @@ export const MissionSection: React.FC = () => {
 
   // Initialize cards when data is loaded
   useEffect(() => {
+    if (!missionData || loading) return; // Wait for data to load
+    
     let cardData = STACK_IMAGES;
     
     // Use WordPress data if available
@@ -246,6 +268,7 @@ export const MissionSection: React.FC = () => {
                   <img 
                     src={card.url} 
                     alt={card.title} 
+                    loading="lazy"
                     className="w-full h-full object-cover rounded-2xl grayscale-[15%] group-hover:grayscale-0 transition-all duration-700"
                     draggable={false}
                   />
