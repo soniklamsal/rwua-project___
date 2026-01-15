@@ -112,11 +112,17 @@ export const ChairpersonSection: React.FC = () => {
         <motion.div
           key={`bg-${currentSlide.id}`}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.2 }}
+          animate={{ opacity: 0.3 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 z-0 bg-cover bg-center grayscale blur-md"
-          style={{ backgroundImage: `url(${currentSlide.imageUrl})` }}
+          transition={{ duration: 0.8 }}
+          className="absolute inset-0 z-0 bg-cover bg-center grayscale"
+          style={{ 
+            backgroundImage: `url(${currentSlide.bgImageUrl})`,
+            filter: 'blur(8px) grayscale(100%)'
+          }}
         />
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 z-0 bg-black/50" />
       </AnimatePresence>
 
       {/* LEFT: TEXT (50%) */}
