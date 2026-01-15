@@ -8,13 +8,19 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'localhost',
         port: '',
-        pathname: '/wordpress/wp-content/uploads/**',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'rwua.com.np',
         port: '',
-        pathname: '/wp-content/uploads/**',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'rwua.bishalbaniya.com.np',
+        port: '',
+        pathname: '/**',
       },
       {
         protocol: 'https',
