@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
-import { Vacancy } from '@/lib/data';
 import { 
+  Vacancy,
   transformToVacancy, 
   extractJobCategoriesFromVacancies, 
   filterVacanciesByStatus, 

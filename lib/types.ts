@@ -38,12 +38,13 @@ export interface VacancyCardProps {
     id: string;
     position: string;
     description: string;
-    department: string;
+    employmentType: string;
+    jobCategory: string;
     deadline: string;
     location: string;
-    tags: string[];
     image?: string;
     status: 'open' | 'closed';
+    applyUrl?: string;
   };
   className?: string;
 }

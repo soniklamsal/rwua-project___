@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Calendar, MapPin, Building, ExternalLink, Clock } from 'lucide-react';
-import { Vacancy } from '@/lib/data';
+import { Vacancy } from '@/lib/vacancyUtils';
 import WordPressImage from '../WordPressImage';
 import ApplicationForm from './ApplicationForm';
 

@@ -12,7 +12,6 @@ export interface WordPressVacancy {
     jobLocation: string;
     applicationDeadline: string;
     vacancyStatus: string[] | string;
-    applyUrl?: string;
     cardImage?: {
       node: {
         sourceUrl: string;
@@ -88,7 +87,6 @@ export function transformToVacancy(post: WordPressVacancy): Vacancy {
     location: fields?.jobLocation || 'Nepal',
     image: imageUrl,
     status: status,
-    applyUrl: fields?.applyUrl || undefined
   };
   
   console.log(`✅ Vacancy transformed:`, {

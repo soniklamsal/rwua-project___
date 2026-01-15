@@ -17,7 +17,6 @@ export const GET_VACANCIES = gql`
           jobLocation
           applicationDeadline
           vacancyStatus
-          applyUrl
           cardImage {
             node {
               sourceUrl

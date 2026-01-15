@@ -27,12 +27,13 @@ export interface Vacancy {
   id: string;
   position: string;
   description: string;
-  department: string;
+  employmentType: string;
+  jobCategory: string;
   deadline: string;
   location: string;
-  tags: string[];
   image?: string;
   status: 'open' | 'closed';
+  applyUrl?: string;
 }
 
 // Success Stories Data
@@ -155,10 +156,10 @@ export const vacancies: Vacancy[] = [
     id: '1',
     position: 'Program Manager - Community Development',
     description: 'Lead community development initiatives in rural areas. Responsible for program planning, implementation, and monitoring.',
-    department: 'Programs',
+    employmentType: 'Full-time',
+    jobCategory: 'Programs',
     deadline: '2025-06-15',
     location: 'Haripur, Nepal',
-    tags: ['management', 'community', 'development', 'leadership'],
     image: '/images/vacancy1.jpeg',
     status: 'open'
   },
@@ -166,10 +167,10 @@ export const vacancies: Vacancy[] = [
     id: '2',
     position: 'Finance and Admin Coordinator',
     description: 'Manage financial operations and administrative functions. Oversee budget planning and financial reporting.',
-    department: 'Finance',
+    employmentType: 'Full-time',
+    jobCategory: 'Finance',
     deadline: '2025-05-28',
     location: 'Head Office, Nepal',
-    tags: ['finance', 'administration', 'budgeting', 'compliance'],
     image: '/images/vacancy2.jpeg',
     status: 'open'
   },
@@ -177,10 +178,10 @@ export const vacancies: Vacancy[] = [
     id: '3',
     position: 'Monitoring & Evaluation Officer',
     description: 'Design and implement M&E frameworks for programs. Conduct regular monitoring visits and prepare evaluation reports.',
-    department: 'M&E',
+    employmentType: 'Full-time',
+    jobCategory: 'M&E',
     deadline: '2025-07-20',
     location: 'Regional Office',
-    tags: ['monitoring', 'evaluation', 'reporting', 'quality'],
     image: '/images/vacancy1.jpeg',
     status: 'open'
   },
@@ -188,10 +189,10 @@ export const vacancies: Vacancy[] = [
     id: '4',
     position: 'Project Coordinator - Education',
     description: 'Coordinate education and literacy programs in rural communities. Manage project activities and liaise with schools.',
-    department: 'Programs',
+    employmentType: 'Full-time',
+    jobCategory: 'Programs',
     deadline: '2025-06-25',
     location: 'Sarlahi District',
-    tags: ['education', 'coordination', 'literacy', 'community'],
     image: '/images/vacancy3.jpg',
     status: 'open'
   },
@@ -199,10 +200,10 @@ export const vacancies: Vacancy[] = [
     id: '5',
     position: 'Communications Specialist',
     description: 'Develop communication strategies and manage public relations. Create content for social media and publications.',
-    department: 'Communications',
+    employmentType: 'Full-time',
+    jobCategory: 'Communications',
     deadline: '2024-12-15',
     location: 'Head Office, Nepal',
-    tags: ['communications', 'social media', 'content', 'public relations'],
     image: '/images/vacancy2.jpeg',
     status: 'closed'
   },
@@ -210,10 +211,10 @@ export const vacancies: Vacancy[] = [
     id: '6',
     position: 'Field Operations Manager',
     description: 'Oversee field operations and coordinate with local communities. Manage field staff and ensure program quality.',
-    department: 'Field Operations',
+    employmentType: 'Full-time',
+    jobCategory: 'Field Operations',
     deadline: '2024-11-30',
     location: 'Multiple Districts',
-    tags: ['field operations', 'management', 'community', 'coordination'],
     image: '/images/vacancy1.jpeg',
     status: 'closed'
   },
@@ -221,10 +222,10 @@ export const vacancies: Vacancy[] = [
     id: '7',
     position: 'Senior Finance Officer',
     description: 'Handle complex financial transactions and donor reporting. Ensure compliance with financial regulations.',
-    department: 'Finance',
+    employmentType: 'Full-time',
+    jobCategory: 'Finance',
     deadline: '2024-10-20',
     location: 'Head Office, Nepal',
-    tags: ['finance', 'donor reporting', 'compliance', 'senior level'],
     image: '/images/vacancy3.jpg',
     status: 'closed'
   }
