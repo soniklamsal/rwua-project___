@@ -94,7 +94,7 @@ export const NewsUpdates: React.FC = () => {
           
           <Link 
             href="/news"
-            className={`group flex items-center gap-3 lg:gap-4 text-deep-purple font-black text-[10px] lg:text-xs uppercase tracking-[0.3em] transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`group flex items-center gap-3 lg:gap-4 text-core-blue font-black text-[10px] lg:text-xs uppercase tracking-[0.3em] transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
           >
             <span className="border-b border-impact-red/20 group-hover:border-impact-red pb-1">All Vacancy & Press</span>
             <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full border border-impact-red/10 flex items-center justify-center group-hover:bg-impact-red group-hover:text-white transition-all">
@@ -143,7 +143,7 @@ export const NewsUpdates: React.FC = () => {
                 </div>
               </div>
 
-              <h3 className="text-xl lg:text-3xl font-bold text-deep-purple mb-4 lg:mb-8 leading-[1.3] font-nepali group-hover:text-terracotta transition-colors duration-500">
+              <h3 className="text-xl lg:text-3xl font-bold text-core-blue mb-4 lg:mb-8 leading-[1.3] font-nepali group-hover:text-terracotta transition-colors duration-500">
                 {news.title}
               </h3>
               
@@ -152,7 +152,7 @@ export const NewsUpdates: React.FC = () => {
               </p>
 
               <div className="pt-6 lg:pt-8 mt-auto border-t border-stone-50">
-                <div className="inline-flex items-center gap-3 lg:gap-4 text-deep-purple font-black text-[10px] lg:text-xs uppercase tracking-[0.3em] group/link">
+                <div className="inline-flex items-center gap-3 lg:gap-4 text-core-blue font-black text-[10px] lg:text-xs uppercase tracking-[0.3em] group/link">
                   <span className="relative">
                     Read Story
                     <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-terracotta transition-all duration-500 group-hover/link:w-full"></span>

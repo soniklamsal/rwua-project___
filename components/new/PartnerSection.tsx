@@ -226,7 +226,7 @@ export const PartnerSection: React.FC = () => {
           
           <span className={`font-black text-[10px] text-center uppercase tracking-[0.2em] transition-all duration-500
             ${isActive 
-              ? 'text-deep-purple translate-y-1 opacity-100' 
+              ? 'text-core-blue translate-y-1 opacity-100' 
               : 'text-stone-300 opacity-0 group-hover:opacity-60'
             }`}>
             {partner.name}

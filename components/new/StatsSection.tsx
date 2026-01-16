@@ -134,7 +134,7 @@ export const StatsSection: React.FC = () => {
   };
 
   const getBorderClass = (index: number) => {
-    const borders = ['bg-deep-purple', 'bg-stone-200', 'bg-stone-200'];
+    const borders = ['bg-core-blue', 'bg-stone-200', 'bg-stone-200'];
     return borders[index % borders.length];
   };
 
@@ -182,7 +182,7 @@ export const StatsSection: React.FC = () => {
                   }
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className={`w-6 h-[2px] ${index === 0 ? 'bg-deep-purple' : 'bg-stone-200'}`}></div>
+                  <div className={`w-6 h-[2px] ${index === 0 ? 'bg-core-blue' : 'bg-stone-200'}`}></div>
                   <span className="text-black text-xs font-black uppercase tracking-[0.3em]">
                     {stat.statLabel}
                   </span>

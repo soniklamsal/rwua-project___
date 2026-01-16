@@ -122,7 +122,7 @@ export default function SearchAndFilter({
                   : 'border-stone-300 focus:border-indigo-400 focus:ring-indigo-200'
                 }`}
             />
-            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ease-out ${isFocused ? 'text-deep-purple' : 'text-stone-400'
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ease-out ${isFocused ? 'text-core-blue' : 'text-stone-400'
               }`} />
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function SearchAndFilter({
       {resultsCount !== undefined && (
         <div className="text-stone-600">
           <p className="font-medium">
-            Showing <span className="font-bold text-deep-purple">{resultsCount}</span> results
+            Showing <span className="font-bold text-core-blue">{resultsCount}</span> results
           </p>
         </div>
       )}

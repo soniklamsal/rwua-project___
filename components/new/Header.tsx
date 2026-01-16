@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      isScrolled || currentView === 'downloads' ? 'bg-deep-purple/95 backdrop-blur-md py-4 shadow-2xl' : 'bg-transparent py-7'
+      isScrolled || currentView === 'downloads' ? 'bg-core-blue/95 backdrop-blur-md py-4 shadow-2xl' : 'bg-transparent py-7'
     }`}>
       <div className="container mx-auto px-8 md:px-16 lg:px-24 flex items-center justify-between">
         <button 

@@ -78,7 +78,7 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 overflow-hidden">
       <div className="relative p-6 bg-white rounded-xl shadow-lg w-full max-w-md">
         {/* Decorative Background - Smaller */}
-        <div className="absolute inset-0 -z-10 transform rotate-3 bg-deep-purple rounded-xl"></div>
+        <div className="absolute inset-0 -z-10 transform rotate-3 bg-core-blue rounded-xl"></div>
 
         {/* Close Button */}
         <button

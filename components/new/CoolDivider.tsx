@@ -29,7 +29,7 @@ export const CoolDivider: React.FC = () => {
       className="relative w-full h-32 overflow-hidden z-20"
       style={{ marginBottom: '-1px', marginTop: '-1px' }}
     >
-      {/* <div className="absolute inset-0 bg-gradient-to-b from-deep-purple via-deep-purple to-[#F9F8F6]"></div> */}
+      {/* <div className="absolute inset-0 bg-gradient-to-b from-core-blue via-core-blue to-[#F9F8F6]"></div> */}
 
       <svg 
         className="absolute inset-0 w-full h-full" 
@@ -39,7 +39,7 @@ export const CoolDivider: React.FC = () => {
       >
         {/* <path 
           d="M0,160 C240,190 480,130 720,160 S1200,190 1440,160 V200 H0 Z" 
-          fill="#4C1D95" 
+          fill="#0100FA" 
           fillOpacity="0.1"
           style={{ transform: `translateX(${scrollProgress * -30}px)` }}
           className="transition-transform duration-1000 ease-out"

@@ -76,7 +76,7 @@ export default function NewsDetailPage() {
                         </p>
                         <Link
                             href="/news"
-                            className="inline-flex items-center px-6 py-3 bg-deep-purple text-white rounded-lg hover:bg-black transition-colors"
+                            className="inline-flex items-center px-6 py-3 bg-core-blue text-white rounded-lg hover:bg-black transition-colors"
                         >
                             <span className="mr-2">←</span>
                             Back to News
@@ -96,7 +96,7 @@ export default function NewsDetailPage() {
                 {/* Back Button */}
                 <Link
                     href="/news"
-                    className="inline-flex items-center text-deep-purple hover:text-black transition-colors mb-6 text-sm font-medium"
+                    className="inline-flex items-center text-core-blue hover:text-black transition-colors mb-6 text-sm font-medium"
                 >
                     <span className="mr-2">←</span>
                     Back to News
@@ -157,7 +157,7 @@ export default function NewsDetailPage() {
                                     {article.tags.map((tag, index) => (
                                         <span
                                             key={index}
-                                            className="px-3 py-1 bg-purple-100 text-deep-purple text-sm rounded-full"
+                                            className="px-3 py-1 bg-purple-100 text-core-blue text-sm rounded-full"
                                         >
                                             #{tag}
                                         </span>
@@ -197,10 +197,10 @@ export default function NewsDetailPage() {
                                                     onError={() => { }}
                                                 />
                                             </div>
-                                            <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-deep-purple transition-colors line-clamp-2">
+                                            <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-core-blue transition-colors line-clamp-2">
                                                 {relatedArticle.title}
                                             </h4>
-                                            <button className="inline-flex items-center px-4 py-2 bg-deep-purple text-white text-sm font-medium rounded-lg hover:bg-black transition-colors">
+                                            <button className="inline-flex items-center px-4 py-2 bg-core-blue text-white text-sm font-medium rounded-lg hover:bg-black transition-colors">
                                                 Read More
                                             </button>
                                         </Link>

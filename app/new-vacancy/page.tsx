@@ -27,7 +27,7 @@ export default function VacancyPage() {
       <div className="container mx-auto px-8 md:px-16 lg:px-24">
         <div className="max-w-3xl mb-16">
           <span className="text-terracotta font-black uppercase tracking-[0.4em] text-[10px]">Careers</span>
-          <h1 className="text-6xl lg:text-8xl font-serif-impact text-deep-purple leading-tight mt-4">Join our <br /><span className="italic">Mission</span>.</h1>
+          <h1 className="text-6xl lg:text-8xl font-serif-impact text-core-blue leading-tight mt-4">Join our <br /><span className="italic">Mission</span>.</h1>
           <p className="text-stone-500 text-xl mt-8 leading-relaxed">We are always looking for passionate individuals dedicated to rural empowerment.</p>
         </div>
 

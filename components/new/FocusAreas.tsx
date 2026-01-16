@@ -29,9 +29,9 @@ const focusData = [
     metric: "1,200+ Students",
     icon: <Globe className="w-6 h-6" />,
     color: "bg-core-blue",
-    glow: "bg-[#4C1D95]/5",
-    shadow: "shadow-[0_20px_50px_rgba(76,29,149,0.3)]", 
-    border: "group-hover:border-[#4C1D95]/40"
+    glow: "bg-[#0100FA]/5",
+    shadow: "shadow-[0_20px_50px_rgba(1,0,250,0.3)]", 
+    border: "group-hover:border-[#0100FA]/40"
   },
   {
     id: 2,
@@ -84,7 +84,7 @@ export const FocusAreas: React.FC = () => {
     <section className="py-20 lg:py-32 bg-[#ffffff] text-slate-900 overflow-hidden relative">
       
       {/* Background Accents */}
-      <div className="absolute top-0 right-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#4C1D95]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
+      <div className="absolute top-0 right-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#0100FA]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
       <div className="absolute bottom-0 left-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#C2410C]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
 
       <div className="container mx-auto px-6 relative z-10">

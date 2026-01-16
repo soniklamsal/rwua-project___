@@ -60,7 +60,7 @@ export default function EmptyState({
         {onReset && (
           <button
             onClick={onReset}
-            className="inline-flex items-center px-6 py-3 bg-deep-purple text-white rounded-lg hover:bg-black transition-colors font-bold focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2"
+            className="inline-flex items-center px-6 py-3 bg-core-blue text-white rounded-lg hover:bg-black transition-colors font-bold focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2"
           >
             {actionLabel}
           </button>

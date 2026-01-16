@@ -83,7 +83,7 @@ export default function ContactPage() {
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-terracotta rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-deep-purple">We are here</span>
+                    <span className="text-sm font-medium text-core-blue">We are here</span>
                   </div>
                 </div>
               </div>
