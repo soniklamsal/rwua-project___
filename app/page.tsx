@@ -11,6 +11,8 @@ import { CoolDivider } from '@/components/new/CoolDivider';
 import { About } from '@/components/new/About';
  
 
+ 
+
 // Enable static generation with revalidation
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -18,6 +20,7 @@ export default function Home() {
   return (
     <div className="bg-white">
       <ImpactHero />
+
       <MissionSection />
       <FocusAreas />
       <ChairpersonSection />
