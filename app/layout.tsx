@@ -8,6 +8,7 @@ import FaustClientProvider from '@/components/FaustClientProvider';
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: 'swap', // Optimize font loading
 });
 
 export const metadata: Metadata = {

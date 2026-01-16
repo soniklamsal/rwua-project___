@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { executeQuery } from '@/lib/wordpress/client';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
@@ -107,39 +108,61 @@ export const ImpactHero: React.FC = () => {
   useEffect(() => {
     if (!isDataLoaded || !heroData) return;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+    // Use requestAnimationFrame to avoid forced reflow
+    const animateElements = () => {
+      const ctx = gsap.context(() => {
+        // Batch DOM reads before writes
+        const elements = {
+          reveals: document.querySelectorAll(".gsap-reveal"),
+          image: imageRef.current,
+          badge: badgeRef.current,
+        };
 
-      tl.from(".gsap-reveal", {
-        y: 50,
-        opacity: 0,
-        duration: 1.2,
-        stagger: 0.1,
-      })
-      .from(imageRef.current, {
-        x: 60,
-        opacity: 0,
-        duration: 1.4,
-        scale: 0.95,
-      }, "-=1")
-      .from(badgeRef.current, {
-        scale: 0,
-        rotation: -90,
-        duration: 0.8,
-        ease: "back.out(1.7)",
-      }, "-=0.6");
+        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-      gsap.to(imageRef.current, {
-        y: 15,
-        duration: 2.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut"
-      });
-    }, containerRef);
+        tl.from(elements.reveals, {
+          y: 50,
+          opacity: 0,
+          duration: 1.2,
+          stagger: 0.1,
+        })
+        .from(elements.image, {
+          x: 60,
+          opacity: 0,
+          duration: 1.4,
+          scale: 0.95,
+        }, "-=1")
+        .from(elements.badge, {
+          scale: 0,
+          rotation: -90,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        }, "-=0.6");
 
-    return () => ctx.revert();
-  }, [isDataLoaded]);
+        // Floating animation with will-change for GPU acceleration
+        gsap.to(elements.image, {
+          y: 15,
+          duration: 2.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          force3D: true, // Force GPU acceleration
+        });
+      }, containerRef);
+
+      return ctx;
+    };
+
+    // Defer animation to next frame
+    const rafId = requestAnimationFrame(() => {
+      const ctx = animateElements();
+      return () => ctx.revert();
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, [isDataLoaded, heroData]);
 
   return (
     <section 
@@ -207,13 +230,19 @@ export const ImpactHero: React.FC = () => {
             </div>
 
             <div className="w-full lg:w-[45%] order-1 lg:order-2 relative">
-              <div ref={imageRef} className="relative z-10">
+              <div ref={imageRef} className="relative z-10" style={{ willChange: 'transform' }}>
                 <div className="relative aspect-[4/5] bg-stone-50 rounded-tr-[120px] lg:rounded-tr-[200px] rounded-bl-[120px] lg:rounded-bl-[200px] overflow-hidden shadow-2xl border-4 lg:border-8 border-white">
-                  <img 
+                  {/* Optimized Next.js Image with priority for LCP */}
+                  <Image
                     src={heroData.heroImage?.node?.sourceUrl || "/images/hero.png"}
                     alt={heroData.heroImage?.node?.altText || "Rural Women Upliftment"}
-                    className="w-full h-full object-cover"
-                    onLoad={(e) => (e.currentTarget.style.opacity = '1')}
+                    fill
+                    priority
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 45vw"
+                    className="object-cover"
+                    placeholder="blur"
+                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAwIiBoZWlnaHQ9IjQ3NSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4="
                   />
                   
                   <div className="absolute bottom-4 left-4 right-4 lg:bottom-10 lg:left-10 lg:right-10 p-6 lg:p-10 bg-white/95 backdrop-blur-xl rounded-[25px] lg:rounded-[40px] shadow-2xl border border-white/20">
