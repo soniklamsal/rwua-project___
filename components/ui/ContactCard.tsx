@@ -9,7 +9,7 @@ interface ContactCardProps {
 export default function ContactCardComponent({ card }: ContactCardProps) {
   const IconComponent = getContactIcon(card.icon);
   
-  const CardContent = () => (
+  const cardContent = (
     <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-200 hover:shadow-md hover:border-impact-red/20 transition-all">
       <div className="flex items-center space-x-3">
         <div className="w-8 h-8 bg-core-blue/10 rounded-lg flex items-center justify-center">
@@ -32,11 +32,11 @@ export default function ContactCardComponent({ card }: ContactCardProps) {
         rel="noopener noreferrer"
         className="block hover:scale-105 transition-transform"
       >
-        <CardContent />
+        {cardContent}
       </a>
     );
   }
 
   // Otherwise, just return the card
-  return <CardContent />;
+  return cardContent;
 }
