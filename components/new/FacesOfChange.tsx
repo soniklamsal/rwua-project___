@@ -107,7 +107,7 @@ export const FacesOfChange: React.FC = () => {
               <div className="w-8 h-[2px] bg-terracotta/40"></div>
             </div>
             <h2 className="text-5xl lg:text-7xl font-serif-impact text-core-blue leading-tight tracking-tighter">
-              Real people. <span className="italic opacity-80 ml-2">Real stories.</span>
+              Real people. <span className="italic opacity-80 ml-2 text-impact-red">Real stories.</span>
             </h2>
           </div>
         </div>
@@ -173,7 +173,7 @@ export const FacesOfChange: React.FC = () => {
             href="/success-story"
             className="relative group px-10 py-4 overflow-hidden border border-core-blue/20 bg-stone-50/50 hover:bg-core-blue transition-all duration-500 shrink-0 inline-block"
           >
-            <span className="relative z-10 text-core-blue group-hover:text-vibrant-gold font-black text-xs tracking-[0.3em] uppercase">More Stories</span>
+            <span className="relative z-10 text-core-blue group-hover:text-white font-black text-xs tracking-[0.3em] uppercase">More Stories</span>
             <div className="absolute inset-0 bg-core-blue translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
           </Link>
         </div>

@@ -40,7 +40,11 @@ export const ChairpersonSection: React.FC = () => {
     const fetchShowcaseMembers = async () => {
       try {
         setIsLoading(true);
-        const { data } = await apolloClient.query({ query: GET_ALL_SHOWCASE_MEMBERS, fetchPolicy: 'network-only' });
+        const { data } = await apolloClient.query({ 
+          query: GET_ALL_SHOWCASE_MEMBERS, 
+          fetchPolicy: 'network-only' 
+        });
+        
         if (data?.showcaseMembers?.nodes?.[0]?.showcaseMemberFieldsType?.members) {
           const wpMembers = data.showcaseMembers.nodes[0].showcaseMemberFieldsType.members.map((member: any, index: number) => ({
             id: index.toString(),
@@ -68,17 +72,7 @@ export const ChairpersonSection: React.FC = () => {
           })));
         }
       } catch (error) {
-        setSlides(ORG_MEMBERS.map((m, i) => ({
-          id: i.toString(),
-          name: m.name,
-          nepaliName: m.nepaliName,
-          role: m.role,
-          quote: typeof m.quote === 'string' ? m.quote : 'Leading community transformation.',
-          phone: m.phone || '',
-          description: typeof m.quote === 'string' ? m.quote : 'Leading community transformation.',
-          imageUrl: m.imageUrl,
-          bgImageUrl: m.imageUrl,
-        })));
+        console.error("Error fetching members:", error);
       } finally {
         setIsLoading(false);
       }
@@ -90,7 +84,7 @@ export const ChairpersonSection: React.FC = () => {
     if (isAnimating || slides.length === 0) return;
     setIsAnimating(true);
     setCurrentIndex((prev) => (prev + 1) % slides.length);
-    setTimeout(() => setIsAnimating(false), 800);
+    setTimeout(() => setIsAnimating(false), 1000);
   }, [slides.length, isAnimating]);
 
   useEffect(() => {
@@ -112,27 +106,24 @@ export const ChairpersonSection: React.FC = () => {
         <motion.div
           key={`bg-${currentSlide.id}`}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
+          animate={{ opacity: 0.25 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          className="absolute inset-0 z-0 bg-cover bg-center grayscale"
-          style={{ 
-            backgroundImage: `url(${currentSlide.bgImageUrl})`,
-            filter: 'blur(8px) grayscale(100%)'
-          }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          className="absolute inset-0 z-0 bg-cover bg-center grayscale blur-md"
+          style={{ backgroundImage: `url(${currentSlide.bgImageUrl})` }}
         />
-        <div className="absolute inset-0 z-0 bg-black/60" />
       </AnimatePresence>
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
 
-      {/* LEFT CONTENT: TEXT (Repositioned for mobile) */}
+      {/* LEFT CONTENT */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center pt-24 pb-12 lg:py-0 px-8 md:px-20 lg:pl-32 lg:pr-10 z-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className="font-serif text-5xl md:text-7xl lg:text-[110px] font-bold leading-[0.9] mb-4 text-white">
               {currentSlide.name}
@@ -143,63 +134,77 @@ export const ChairpersonSection: React.FC = () => {
             <p className="text-zinc-500 text-[10px] lg:text-xs tracking-[0.4em] uppercase font-bold mb-6">
               {currentSlide.role}
             </p>
-            <p className="text-zinc-300 text-base lg:text-lg leading-relaxed max-w-md mb-8 lg:mb-10">
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-zinc-300 text-base lg:text-lg leading-relaxed max-w-md mb-8 lg:mb-10"
+            >
               {currentSlide.description}
-            </p>
+            </motion.p>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* RIGHT CONTENT: IMAGES (Repositioned for mobile stack) */}
-      <div className="w-full lg:w-1/2 relative h-[500px] md:h-[600px] lg:h-full flex items-center overflow-visible px-8 lg:px-0">
-        <div className="relative w-full h-full lg:h-[600px] flex items-center">
-          
+      {/* RIGHT CONTENT: STACKED IMAGES ALIGNED AT BOTTOM */}
+      <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-24 lg:pb-34 px-8 lg:px-0">
+        <div className="relative w-full h-full flex items-end overflow-visible">
           <AnimatePresence mode="popLayout">
+            
             {/* 1. MAIN IMAGE */}
             <motion.div
               key={`main-${currentSlide.id}`}
-              layoutId="main"
-              className="absolute left-0 lg:left-0 z-30 w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[2rem] lg:rounded-[3rem] border-[6px] lg:border-[10px] border-white shadow-2xl overflow-hidden cursor-pointer"
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -50, opacity: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              layout
+              initial={{ x: 100, opacity: 0, scale: 0.9 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: -100, opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute left-0 z-30 w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[2rem] lg:rounded-[3rem] border-[6px] lg:border-[10px] border-white shadow-2xl overflow-hidden cursor-pointer"
               onClick={handleNext}
             >
               <img src={currentSlide.imageUrl} className="w-full h-full object-cover" alt="Main" />
             </motion.div>
 
-            {/* 2. SECOND IMAGE (Hidden on small mobile, shown from md up) */}
+            {/* 2. SECOND IMAGE - Solid White Border */}
             <motion.div
               key={`second-${nextSlide.id}`}
-              className="absolute left-[220px] md:left-[300px] lg:left-[380px] z-20 w-[200px] h-[300px] md:w-[280px] md:h-[420px] lg:w-[320px] lg:h-[480px] rounded-[1.5rem] lg:rounded-[2.5rem] opacity-30 lg:opacity-50 grayscale overflow-hidden hidden sm:block"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 0.5, x: 0 }}
-              transition={{ duration: 0.8 }}
+              layout
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 0.9 }}
+              exit={{ x: -50, opacity: 0 }}
+              transition={{ duration: 0.9, delay: 0.1 }}
+              className="absolute left-[180px] md:left-[280px] lg:left-[360px] z-20 w-[180px] h-[260px] md:w-[280px] md:h-[400px] lg:w-[320px] lg:h-[460px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[4px] lg:border-[8px] border-white grayscale overflow-hidden hidden sm:block shadow-xl"
             >
-              <img src={nextSlide.imageUrl} className="w-full h-full object-cover" alt="Second" />
+              <img src={nextSlide.imageUrl} className="w-full h-full object-cover" alt="Next" />
             </motion.div>
 
-            {/* 3. THIRD IMAGE (Desktop only) */}
+            {/* 3. THIRD IMAGE - Solid White Border */}
             <motion.div
               key={`third-${thirdSlide.id}`}
-              className="absolute left-[650px] z-10 w-[300px] h-[400px] rounded-[2.5rem] opacity-20 grayscale overflow-hidden hidden lg:block"
+              layout
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.2 }}
-              transition={{ duration: 0.8 }}
+              animate={{ opacity: 0.7 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.9, delay: 0.2 }}
+              className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block shadow-lg"
             >
               <img src={thirdSlide.imageUrl} className="w-full h-full object-cover" alt="Third" />
             </motion.div>
+
           </AnimatePresence>
         </div>
       </div>
 
-      {/* NAVIGATION FOOTER */}
-      <footer className="absolute bottom-6 lg:bottom-10 left-8 md:left-20 lg:left-32 z-50 flex items-center gap-3 lg:gap-4">
+      {/* FOOTER */}
+      <footer className="absolute bottom-6 lg:bottom-10 left-8 md:left-20 lg:left-32 z-50 flex items-center gap-3">
         {slides.map((_, idx) => (
-          <div key={idx} className={`h-[2px] transition-all duration-500 ${idx === currentIndex ? 'w-8 lg:w-12 bg-white' : 'w-3 lg:w-4 bg-white/20'}`} />
+          <button key={idx} onClick={() => setCurrentIndex(idx)} className="group py-4">
+            <div className={`h-[2px] transition-all duration-700 ease-in-out ${idx === currentIndex ? 'w-12 bg-blue-500' : 'w-4 bg-white/20 group-hover:bg-white/40'}`} />
+          </button>
         ))}
-        <span className="text-[9px] lg:text-[10px] font-bold text-white/40 ml-2 lg:ml-4">0{currentIndex + 1} / 0{slides.length}</span>
+        <span className="text-[10px] font-mono text-white/40 ml-4">
+          {String(currentIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+        </span>
       </footer>
 
     </section>

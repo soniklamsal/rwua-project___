@@ -103,7 +103,7 @@ export function GallerySection() {
               key={cat}
               onClick={() => { setSelectedCategory(cat); setCurrentIndex(null); }}
               className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
-                selectedCategory === cat ? 'bg-black text-white' : 'bg-white text-gray-400 border border-gray-100'
+                selectedCategory === cat ? 'bg-core-blue text-white' : 'bg-white text-black-400 border border-black-100'
               }`}
             >
               {cat}

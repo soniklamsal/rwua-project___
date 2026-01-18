@@ -115,7 +115,7 @@ export const NewsUpdates: React.FC = () => {
               style={{ 
                 transitionDelay: `${index * 150}ms`,
                 // Remove offset on mobile (hidden below md breakpoint)
-                marginTop: typeof window !== 'undefined' && window.innerWidth > 768 ? (index === 1 ? '2rem' : '0') : '0' 
+                // marginTop: typeof window !== 'undefined' && window.innerWidth > 768 ? (index === 1 ? '2rem' : '0') : '0' 
               }}
             >
               <div className="absolute top-0 left-0 w-0 h-1 bg-vibrant-gold group-hover:w-full transition-all duration-700 ease-in-out"></div>

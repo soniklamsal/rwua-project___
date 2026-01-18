@@ -70,20 +70,13 @@ export default function FaustClientProvider({ children }: FaustClientProviderPro
 
     // Only render after component mounts to avoid SSR issues
     if (!mounted) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-core-blue mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading...</p>
-                </div>
-            </div>
-        );
+        return null;
     }
 
     // Show error state if connection failed
     if (connectionError || !apolloClient) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50" suppressHydrationWarning>
                 <div className="text-center max-w-md p-8">
                     <div className="text-6xl mb-4">⚠️</div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">Connection Issue</h2>
