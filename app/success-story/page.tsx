@@ -128,7 +128,8 @@ export default function SuccessStoryPage() {
         });
       }
 
-      setFilteredStories(filtered);
+      // Use functional update to avoid dependency on setFilteredStories
+      setFilteredStories(() => filtered);
     } catch (error) {
       console.error('❌ Error filtering stories:', error);
     }
