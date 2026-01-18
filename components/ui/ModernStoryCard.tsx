@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { SuccessStory } from '@/lib/data';
