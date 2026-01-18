@@ -24,7 +24,8 @@ export function useWordPressQuery<TData = any, TVariables extends OperationVaria
   // Reset error state when query succeeds
   useEffect(() => {
     if (result.data && !result.error) {
-      setHasError(false);
+      // Use functional update to avoid dependency on setHasError
+      setHasError(() => false);
     }
   }, [result.data, result.error]);
 
