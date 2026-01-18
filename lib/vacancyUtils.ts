@@ -29,9 +29,26 @@ export interface Vacancy {
   deadline: string;
   location: string;
   image?: string;
-  status: 'open' | 'closed';
+  status: 'open' | 'closed'; // Automatically calculated based on deadline, with manual override support
   applyUrl?: string;
 }
+
+// Check if a vacancy is expired based on application deadline
+function isVacancyExpired(deadline: string): boolean {
+  if (!deadline) return false;
+  
+  // Create date objects in UTC to avoid timezone issues
+  const now = new Date();
+  const deadlineDate = new Date(deadline);
+  
+  // Set time to end of day for deadline (23:59:59) to be more lenient
+  deadlineDate.setHours(23, 59, 59, 999);
+  
+  return now > deadlineDate;
+}
+
+// Export the utility function for use in other components
+export { isVacancyExpired };
 
 // Transform WordPress vacancy post to Vacancy format with proper WordPress image handling
 export function transformToVacancy(post: WordPressVacancy): Vacancy {
@@ -66,16 +83,31 @@ export function transformToVacancy(post: WordPressVacancy): Vacancy {
     imageUrl = '';
   }
   
-  // Handle vacancyStatus - WPGraphQL exposes it as [String]
+  // Calculate status based on deadline and manual override
+  const deadline = fields?.applicationDeadline || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  
+  // Handle vacancyStatus as manual override - WPGraphQL exposes it as [String]
   const rawStatus = fields?.vacancyStatus;
-  const statusValue = Array.isArray(rawStatus)
+  const manualStatusValue = Array.isArray(rawStatus)
     ? rawStatus[0]?.toLowerCase()
     : rawStatus?.toLowerCase();
   
-  const isOpen = statusValue === 'open';
-  const status: 'open' | 'closed' = isOpen ? 'open' : 'closed';
+  // Determine final status:
+  // 1. If manually set to 'closed', always closed
+  // 2. If deadline has passed, automatically closed
+  // 3. Otherwise, open
+  let status: 'open' | 'closed' = 'open';
   
-  console.log(`📊 Vacancy status for "${post.title}":`, fields?.vacancyStatus, `→ ${status}`);
+  if (manualStatusValue === 'closed') {
+    status = 'closed';
+    console.log(`📊 Vacancy "${post.title}" manually set to closed`);
+  } else if (isVacancyExpired(deadline)) {
+    status = 'closed';
+    console.log(`📊 Vacancy "${post.title}" automatically closed due to expired deadline: ${deadline}`);
+  } else {
+    status = 'open';
+    console.log(`📊 Vacancy "${post.title}" is open (deadline: ${deadline})`);
+  }
   
   const transformed: Vacancy = {
     id: post.slug,
@@ -83,7 +115,7 @@ export function transformToVacancy(post: WordPressVacancy): Vacancy {
     description: fields?.shortDescription || '',
     employmentType: fields?.employmentType || 'General',
     jobCategory: fields?.jobCategory || 'General',
-    deadline: fields?.applicationDeadline || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    deadline: deadline,
     location: fields?.jobLocation || 'Nepal',
     image: imageUrl,
     status: status,
@@ -96,7 +128,8 @@ export function transformToVacancy(post: WordPressVacancy): Vacancy {
     status: transformed.status,
     hasImage: !!transformed.image,
     imageUrl: transformed.image,
-    deadline: transformed.deadline
+    deadline: transformed.deadline,
+    isExpired: isVacancyExpired(deadline)
   });
   
   return transformed;

@@ -91,7 +91,7 @@ export default function ModernStoryCard({ story }: ModernStoryCardProps) {
       {/* Content Section - More compact */}
       <div className="p-3">
         {/* Header */}
-        <h3 className="text-base font-bold text-gray-800 line-clamp-2 mb-2">
+        <h3 className="text-base font-bold text-gray-800 truncate min-w-0 mb-2">
           {story.title}
         </h3>
 

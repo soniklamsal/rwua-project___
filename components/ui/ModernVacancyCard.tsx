@@ -66,6 +66,10 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
   const getDaysRemaining = (deadline: string) => {
     const today = new Date();
     const deadlineDate = new Date(deadline);
+    
+    // Set deadline to end of day for consistency with backend logic
+    deadlineDate.setHours(23, 59, 59, 999);
+    
     const diffTime = deadlineDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
@@ -146,7 +150,7 @@ export default function ModernVacancyCard({ vacancy }: ModernVacancyCardProps) {
         {/* Content Section - More compact */}
         <div className="p-3">
           {/* Position Title */}
-          <h3 className="text-base font-bold text-gray-800 mb-2 line-clamp-2">
+          <h3 className="text-base font-bold text-gray-800 truncate min-w-0 mb-2">
             {vacancy.position}
           </h3>
 

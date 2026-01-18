@@ -8,6 +8,7 @@ import { SuccessStory } from '@/lib/data';
 import { GET_SUCCESS_STORY_BY_SLUG } from '@/lib/successStoryQueries';
 import { transformToSuccessStory, WordPressSuccessStoryPost } from '@/lib/successStoryUtils';
 import WordPressImage from '@/components/WordPressImage';
+import RelatedStories from '@/components/ui/RelatedStories';
 
 export default function StoryDetailPage() {
   const params = useParams();
@@ -182,6 +183,13 @@ export default function StoryDetailPage() {
             </div>
           </div>
         </article>
+
+        {/* Related Stories Section */}
+        <RelatedStories 
+          currentStoryId={story.id}
+          currentStoryCategory={story.category}
+          limit={4}
+        />
       </div>
     </div>
   );

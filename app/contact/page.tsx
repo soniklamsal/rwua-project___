@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { useQuery } from '@apollo/client';
+import { ArrowRight } from 'lucide-react';
+import { GET_CONTACT_CARDS } from '@/lib/contactQueries';
+import { transformToContactCard, WordPressContactPost } from '@/lib/contactUtils';
+import ContactCardComponent from '@/components/ui/ContactCard';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +16,19 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Fetch contact cards from WordPress
+  const { loading, error, data } = useQuery(GET_CONTACT_CARDS, {
+    fetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+  });
+
+  // Transform contact cards
+  const contactCards = data?.contactUs?.nodes 
+    ? (data.contactUs.nodes as WordPressContactPost[])
+        .map(transformToContactCard)
+        .sort((a, b) => a.order - b.order)
+    : [];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -90,57 +107,35 @@ export default function ContactPage() {
 
               {/* Contact Info Cards */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Phone */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-200 hover:shadow-md hover:border-impact-red/20 transition-all">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-core-blue/10 rounded-lg flex items-center justify-center">
-                      <Phone className="w-4 h-4 text-core-blue" />
+                {loading ? (
+                  // Loading skeleton
+                  [...Array(4)].map((_, index) => (
+                    <div key={index} className="bg-white rounded-xl p-4 shadow-sm border border-stone-200 animate-pulse">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                        <div>
+                          <div className="h-3 bg-gray-200 rounded w-16 mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-stone-500 uppercase tracking-wide font-black">Phone</p>
-                      <p className="font-bold text-core-blue">046-411109</p>
-                    </div>
+                  ))
+                ) : error ? (
+                  // Error fallback - show error message
+                  <div className="col-span-full bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-700 text-sm">Unable to load contact information. Please try again later.</p>
                   </div>
-                </div>
-
-                {/* Email */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-200 hover:shadow-md hover:border-impact-red/20 transition-all">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-core-blue/10 rounded-lg flex items-center justify-center">
-                      <Mail className="w-4 h-4 text-core-blue" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-stone-500 uppercase tracking-wide font-black">Email</p>
-                      <p className="font-bold text-core-blue">info@rwua.org</p>
-                    </div>
+                ) : contactCards.length > 0 ? (
+                  // Dynamic contact cards
+                  contactCards.map((card) => (
+                    <ContactCardComponent key={card.id} card={card} />
+                  ))
+                ) : (
+                  // No data found
+                  <div className="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-blue-700 text-sm">No contact information available.</p>
                   </div>
-                </div>
-
-                {/* Address */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-200 hover:shadow-md hover:border-impact-red/20 transition-all">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-core-blue/10 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-4 h-4 text-core-blue" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-stone-500 uppercase tracking-wide font-black">Address</p>
-                      <p className="font-bold text-core-blue">Haripur, Nepal</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hours */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-200 hover:shadow-md hover:border-impact-red/20 transition-all">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-core-blue/10 rounded-lg flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-core-blue" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-stone-500 uppercase tracking-wide font-black">Hours</p>
-                      <p className="font-bold text-core-blue">10AM - 5PM</p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 

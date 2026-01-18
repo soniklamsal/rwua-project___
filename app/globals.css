@@ -521,6 +521,22 @@ img {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Fade-in animation for dynamic content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
 /* Enhanced hover effects for mega menu */
 .hover-precise:hover .mega-menu-container {
   animation: slideDown 0.3s ease-out forwards;
