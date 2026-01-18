@@ -7,6 +7,21 @@ import { gql } from '@apollo/client';
 import { ShowcaseMember } from '../../lib/faust-types';
 import { ORG_MEMBERS } from '../../lib/constants';
 
+// --- SKELETON COMPONENT ---
+const ChairpersonSkeleton = () => (
+  <section className="relative w-full min-h-screen lg:h-screen bg-black overflow-hidden flex flex-col lg:flex-row animate-pulse">
+    <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-20 lg:pl-32">
+      <div className="h-20 w-3/4 bg-zinc-900 rounded-xl mb-6" />
+      <div className="h-8 w-1/2 bg-zinc-900 rounded-lg mb-4" />
+      <div className="h-4 w-1/4 bg-zinc-900 rounded-md mb-8" />
+      <div className="h-32 w-full bg-zinc-900/50 rounded-xl" />
+    </div>
+    <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-24 lg:pb-32 px-8">
+       <div className="w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] bg-zinc-900 rounded-[3rem]" />
+    </div>
+  </section>
+);
+
 const GET_ALL_SHOWCASE_MEMBERS = gql`
   query GetAllShowcaseMembers {
     showcaseMembers {
@@ -74,7 +89,7 @@ export const ChairpersonSection: React.FC = () => {
       } catch (error) {
         console.error("Error fetching members:", error);
       } finally {
-        setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 800);
       }
     };
     fetchShowcaseMembers();
@@ -92,7 +107,7 @@ export const ChairpersonSection: React.FC = () => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [handleNext]);
 
-  if (isLoading || slides.length === 0) return null;
+  if (isLoading || slides.length === 0) return <ChairpersonSkeleton />;
 
   const currentSlide = slides[currentIndex];
   const nextSlide = slides[(currentIndex + 1) % slides.length];
@@ -146,8 +161,8 @@ export const ChairpersonSection: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* RIGHT CONTENT: STACKED IMAGES ALIGNED AT BOTTOM */}
-      <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-24 lg:pb-34 px-8 lg:px-0">
+      {/* RIGHT CONTENT: STACKED IMAGES */}
+      <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-24 lg:pb-32 px-8 lg:px-0">
         <div className="relative w-full h-full flex items-end overflow-visible">
           <AnimatePresence mode="popLayout">
             
@@ -157,7 +172,7 @@ export const ChairpersonSection: React.FC = () => {
               layout
               initial={{ x: 100, opacity: 0, scale: 0.9 }}
               animate={{ x: 0, opacity: 1, scale: 1 }}
-              exit={{ x: -100, opacity: 0, scale: 0.95 }}
+              exit={{ x: -100, opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className="absolute left-0 z-30 w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[2rem] lg:rounded-[3rem] border-[6px] lg:border-[10px] border-white shadow-2xl overflow-hidden cursor-pointer"
               onClick={handleNext}
@@ -165,25 +180,25 @@ export const ChairpersonSection: React.FC = () => {
               <img src={currentSlide.imageUrl} className="w-full h-full object-cover" alt="Main" />
             </motion.div>
 
-            {/* 2. SECOND IMAGE - Solid White Border */}
+            {/* 2. SECOND IMAGE */}
             <motion.div
               key={`second-${nextSlide.id}`}
               layout
               initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 0.9 }}
-              exit={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -50, opacity: 0.95 }}
               transition={{ duration: 0.9, delay: 0.1 }}
               className="absolute left-[180px] md:left-[280px] lg:left-[360px] z-20 w-[180px] h-[260px] md:w-[280px] md:h-[400px] lg:w-[320px] lg:h-[460px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[4px] lg:border-[8px] border-white grayscale overflow-hidden hidden sm:block shadow-xl"
             >
               <img src={nextSlide.imageUrl} className="w-full h-full object-cover" alt="Next" />
             </motion.div>
 
-            {/* 3. THIRD IMAGE - Solid White Border */}
+            {/* 3. THIRD IMAGE */}
             <motion.div
               key={`third-${thirdSlide.id}`}
               layout
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.7 }}
+              animate={{ opacity: 0.9 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.9, delay: 0.2 }}
               className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block shadow-lg"
@@ -195,7 +210,7 @@ export const ChairpersonSection: React.FC = () => {
         </div>
       </div>
 
-      {/* FOOTER */}
+      {/* FOOTER PAGER */}
       <footer className="absolute bottom-6 lg:bottom-10 left-8 md:left-20 lg:left-32 z-50 flex items-center gap-3">
         {slides.map((_, idx) => (
           <button key={idx} onClick={() => setCurrentIndex(idx)} className="group py-4">
