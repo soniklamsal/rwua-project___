@@ -5,7 +5,7 @@ export default function PostNotFound() {
         <div className="min-h-screen bg-stone-50 pt-32 pb-24">
             <div className="container mx-auto px-8 md:px-16 lg:px-24">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl md:text-5xl font-serif-impact text-deep-purple mb-6">
+                    <h1 className="text-4xl md:text-5xl font-serif-impact text-core-blue mb-6">
                         Post Not Found
                     </h1>
                     <p className="text-stone-600 text-lg mb-8">

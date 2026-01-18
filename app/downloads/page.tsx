@@ -129,7 +129,7 @@ export default function DownloadsPage() {
             <span className="w-8 h-[2px] bg-terracotta"></span>
             <span className="text-terracotta font-black uppercase tracking-[0.4em] text-[10px]">Resource Library</span>
           </div>
-          <h1 className="text-5xl lg:text-7xl font-serif-impact text-deep-purple leading-tight tracking-tighter mb-10 animate-in slide-in-from-bottom duration-700 delay-100">
+          <h1 className="text-5xl lg:text-7xl font-serif-impact text-core-blue leading-tight tracking-tighter mb-10 animate-in slide-in-from-bottom duration-700 delay-100">
             Public Archives.
           </h1>
           <p className="text-stone-500 text-lg lg:text-xl leading-relaxed font-black max-w-2xl opacity-70 animate-in fade-in duration-1000 delay-300">
@@ -165,7 +165,7 @@ export default function DownloadsPage() {
               placeholder="SEARCH DOCUMENTS..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-stone-50/80 border-none rounded-2xl md:rounded-full pl-14 pr-8 py-5 text-[11px] font-black uppercase tracking-[0.25em] text-deep-purple placeholder:text-stone-300 focus:bg-white focus:ring-4 focus:ring-indigo-200/30 outline-none transition-all shadow-inner"
+              className="w-full bg-stone-50/80 border-none rounded-2xl md:rounded-full pl-14 pr-8 py-5 text-[11px] font-black uppercase tracking-[0.25em] text-core-blue placeholder:text-stone-300 focus:bg-white focus:ring-4 focus:ring-indigo-200/30 outline-none transition-all shadow-inner"
             />
             <div className="absolute inset-y-0 left-10 flex items-center pointer-events-none text-stone-300 group-focus-within:text-core-blue transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@ export default function DownloadsPage() {
                     <span className="text-stone-200">•</span>
                     <span className="text-[9px] font-black uppercase tracking-widest text-stone-300">{res.type}</span>
                   </div>
-                  <h3 className="text-xl lg:text-3xl font-black text-deep-purple group-hover:text-black transition-colors tracking-tight">
+                  <h3 className="text-xl lg:text-3xl font-black text-core-blue group-hover:text-black transition-colors tracking-tight">
                     {res.title}
                   </h3>
                 </div>
@@ -209,11 +209,11 @@ export default function DownloadsPage() {
                 <div className="flex items-center gap-8 lg:gap-16 shrink-0 border-t md:border-t-0 md:border-l border-stone-50 pt-6 md:pt-0 md:pl-12">
                   <div className="flex flex-col">
                     <span className="text-[8px] font-black uppercase text-stone-300 tracking-widest mb-1.5">Release</span>
-                    <span className="text-[12px] font-black text-stone-700 group-hover:text-deep-purple transition-colors">{res.date}</span>
+                    <span className="text-[12px] font-black text-stone-700 group-hover:text-core-blue transition-colors">{res.date}</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[8px] font-black uppercase text-stone-300 tracking-widest mb-1.5">Filesize</span>
-                    <span className="text-[12px] font-black text-stone-700 group-hover:text-deep-purple transition-colors">{res.size}</span>
+                    <span className="text-[12px] font-black text-stone-700 group-hover:text-core-blue transition-colors">{res.size}</span>
                   </div>
                 </div>
 

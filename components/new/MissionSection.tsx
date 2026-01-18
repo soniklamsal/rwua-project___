@@ -3,6 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { executeQuery } from '@/lib/wordpress/client';
 import { CORE_GOAL, OBJECTIVES } from '@/lib/constants';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // WordPress query
 const GET_MISSION_SECTION = `
@@ -16,7 +20,6 @@ query GetMissionSection {
         missionCtaText
         missionCards {
           cardLabel
-          # Ensure 'cardImage' Return Format is "Image Array" in ACF
           cardImage {
             node {
               sourceUrl
@@ -29,10 +32,8 @@ query GetMissionSection {
     }
   }
 }
-  
 `;
 
-// Fallback data
 const STACK_IMAGES = [
   { id: 1, url: 'https://rwua.com.np/wp-content/uploads/2021/04/7-rotated.jpg', title: 'Life in Hands' },
   { id: 2, url: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=1200', title: 'Community Bonds' },
@@ -51,7 +52,7 @@ interface CardState {
   opacity: number;
   isThrown: boolean;
   zIndex: number;
-  noAnim?: boolean; // New flag to disable transition during reset
+  noAnim?: boolean;
 }
 
 export const MissionSection: React.FC = () => {
@@ -59,23 +60,60 @@ export const MissionSection: React.FC = () => {
   const [isGrabbing, setIsGrabbing] = useState(false);
   const [missionData, setMissionData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
 
   const dragStart = useRef({ x: 0, y: 0, cardId: -1 });
   const velocity = useRef({ x: 0, y: 0 });
   const lastPos = useRef({ x: 0, y: 0 });
   const lastTime = useRef(0);
 
+  // 1. GSAP Scroll Entrance Animation
+  useEffect(() => {
+    if (loading || !missionData) return;
+
+    const ctx = gsap.context(() => {
+      // Animate Heading and Goal
+      gsap.from(".mission-gsap-text", {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 70%",
+        },
+        y: 60,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out",
+        stagger: 0.15
+      });
+
+      // Animate Card Stack Reveal
+      gsap.from(".mission-card-anim", {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+        },
+        scale: 0.8,
+        opacity: 0,
+        rotationY: 20,
+        duration: 1.5,
+        ease: "expo.out",
+        stagger: 0.1
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [loading, missionData]);
+
   // Fetch WordPress data
   useEffect(() => {
     const fetchMissionData = async () => {
       try {
         const wpData = await executeQuery(GET_MISSION_SECTION);
-        
         if (wpData?.missions?.nodes?.[0]?.missionFields) {
           setMissionData(wpData.missions.nodes[0].missionFields);
         } else {
-          // Use fallback only if WordPress returns no data
           setMissionData({
             missionTitle1: "A Dignified",
             missionTitleItalic: "Life for All.",
@@ -87,8 +125,6 @@ export const MissionSection: React.FC = () => {
           });
         }
       } catch (error) {
-        console.error('Error fetching WordPress Mission data:', error);
-        // Use fallback on error
         setMissionData({
           missionTitle1: "A Dignified",
           missionTitleItalic: "Life for All.",
@@ -102,17 +138,14 @@ export const MissionSection: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchMissionData();
   }, []);
 
-  // Initialize cards when data is loaded
+  // Initialize cards
   useEffect(() => {
-    if (!missionData || loading) return; // Wait for data to load
+    if (!missionData || loading) return;
     
     let cardData = STACK_IMAGES;
-    
-    // Use WordPress data if available
     if (missionData?.missionCards && missionData.missionCards.length > 0) {
       cardData = missionData.missionCards
         .filter((card: any) => card?.cardImage?.node?.sourceUrl)
@@ -125,8 +158,7 @@ export const MissionSection: React.FC = () => {
     
     const initial = cardData.map((img, i) => ({
       ...img,
-      x: 0,
-      y: 0,
+      x: 0, y: 0,
       rot: (i % 2 === 0 ? 1.5 : -1.5) * i,
       scale: 1,
       opacity: 1,
@@ -188,35 +220,27 @@ export const MissionSection: React.FC = () => {
       const throwDirectionX = velocity.current.x * 800;
       const throwDirectionY = velocity.current.y * 800;
 
-      // 1. Start the throw
       setCards(prev => prev.map(c => 
         c.id === activeId 
           ? { ...c, isThrown: true, x: throwDirectionX, y: throwDirectionY, opacity: 0, scale: 0.5 } 
           : c
       ));
 
-      // 2. Teleport back to center while invisible
       setTimeout(() => {
         setCards(prev => {
           return prev.map(c => {
             if (c.id === activeId) {
               return { 
                 ...c, 
-                isThrown: false, 
-                x: 0, 
-                y: 0, 
+                isThrown: false, x: 0, y: 0, 
                 rot: (Math.random() - 0.5) * 8, 
-                scale: 1, 
-                opacity: 0, // Keep invisible
-                zIndex: 1,
-                noAnim: true // Disable transition for the jump
+                scale: 1, opacity: 0, zIndex: 1, noAnim: true 
               };
             }
             return { ...c, zIndex: c.zIndex + 1, noAnim: false };
           });
         });
 
-        // 3. Fade back in at the bottom of the stack
         setTimeout(() => {
             setCards(prev => prev.map(c => c.id === activeId ? { ...c, opacity: 1, noAnim: false } : c));
         }, 50);
@@ -233,10 +257,11 @@ export const MissionSection: React.FC = () => {
   };
 
   return (
-    <section className="py-24 lg:py-36 bg-white overflow-hidden select-none" onMouseUp={handleMouseUp} onTouchEnd={handleMouseUp}>
+    <section ref={sectionRef} className="py-24 lg:py-36 bg-white overflow-hidden select-none" onMouseUp={handleMouseUp} onTouchEnd={handleMouseUp}>
       <div className="container mx-auto px-8 md:px-16 lg:px-24">
         <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-32">
 
+          {/* Card Stack Side */}
           <div className="w-full lg:w-1/2 relative flex flex-col items-center">
             <div
               ref={containerRef}
@@ -252,12 +277,11 @@ export const MissionSection: React.FC = () => {
                   key={card.id}
                   onMouseDown={(e) => handleMouseDown(e, card.id)}
                   onTouchStart={(e) => handleMouseDown(e, card.id)}
-                  className="absolute w-full h-full bg-white p-4 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.12)] border border-stone-100 rounded-[32px] pointer-events-auto overflow-hidden"
+                  className="mission-card-anim absolute w-full h-full bg-white p-4 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.12)] border border-stone-100 rounded-[32px] pointer-events-auto overflow-hidden"
                   style={{
                     transform: `translate(${card.x}px, ${card.y}px) rotate(${card.rot}deg) scale(${card.scale})`,
                     zIndex: card.zIndex,
                     opacity: card.opacity,
-                    // The logic here handles the removal of the 'back-going' animation
                     transition: card.noAnim 
                       ? 'none' 
                       : (card.isThrown 
@@ -269,7 +293,7 @@ export const MissionSection: React.FC = () => {
                     src={card.url} 
                     alt={card.title} 
                     loading="lazy"
-                    className="w-full h-full object-cover rounded-2xl grayscale-[15%] group-hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-full object-cover rounded-2xl grayscale-[15%] hover:grayscale-0 transition-all duration-700"
                     draggable={false}
                   />
                   <div className="absolute bottom-10 left-10 right-10">
@@ -282,7 +306,7 @@ export const MissionSection: React.FC = () => {
               ))}
             </div>
 
-            <div className="mt-16 flex items-center gap-6 group">
+            <div className="mission-gsap-text mt-16 flex items-center gap-6 group">
               <div className="w-12 h-[1px] bg-stone-200 group-hover:w-20 transition-all"></div>
               <span className="text-[10px] font-black uppercase tracking-[0.5em] text-stone-300">
                 Grab & Swipe card to cycle
@@ -291,19 +315,18 @@ export const MissionSection: React.FC = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-1/2">
-            <h2 className="text-6xl lg:text-[84px] font-serif-impact text-core-blue leading-[0.9] tracking-tighter mb-10">
+          {/* Text Content Side */}
+          <div ref={textRef} className="w-full lg:w-1/2">
+            <h2 className="mission-gsap-text text-6xl lg:text-[84px] font-serif-impact text-core-blue leading-[0.9] tracking-tighter mb-10">
               {missionData?.missionTitle1 || "A Dignified"} <br />
               <span className="text-impact-red italic">{missionData?.missionTitleItalic || "Life for All."}</span>
             </h2>
 
-            <div className="mb-12 p-8 bg-stone-50 border-l-8 border-flash-yellow rounded-r-3xl">
+            <div className="mission-gsap-text mb-12 p-8 bg-stone-50 border-l-8 border-flash-yellow rounded-r-3xl">
               <p className="text-stone-800 text-xl lg:text-2xl font-bold italic leading-relaxed">
                 "{missionData?.missionGoal || CORE_GOAL}"
               </p>
             </div>
-
-           
           </div>
 
         </div>

@@ -96,7 +96,7 @@ export const FacesOfChange: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-32 bg-white overflow-hidden selection:bg-deep-purple selection:text-white relative">
+    <section ref={sectionRef} className="py-32 bg-white overflow-hidden selection:bg-core-blue selection:text-white relative">
       <div className="container mx-auto px-8 md:px-16 lg:px-24 relative z-10">
         
         <div className="mb-24 flex flex-col items-center text-center">
@@ -106,7 +106,7 @@ export const FacesOfChange: React.FC = () => {
               <h4 className="text-terracotta font-black uppercase tracking-[0.4em] text-[10px]">Voices of Impact</h4>
               <div className="w-8 h-[2px] bg-terracotta/40"></div>
             </div>
-            <h2 className="text-5xl lg:text-7xl font-serif-impact text-deep-purple leading-tight tracking-tighter">
+            <h2 className="text-5xl lg:text-7xl font-serif-impact text-core-blue leading-tight tracking-tighter">
               Real people. <span className="italic opacity-80 ml-2">Real stories.</span>
             </h2>
           </div>
@@ -134,14 +134,14 @@ export const FacesOfChange: React.FC = () => {
                   </div>
                 )}
                 <div className="absolute top-4 left-4 z-20">
-                  <span className="bg-white/90 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-3 py-1 text-deep-purple border border-deep-purple/10">
+                  <span className="bg-white/90 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-3 py-1 text-core-blue border border-core-blue/10">
                     {story.category}
                   </span>
                 </div>
               </div>
 
               <div className="p-10 flex flex-col flex-grow">
-                <h3 className="text-2xl font-bold text-deep-purple mb-6 leading-[1.15] group-hover:text-terracotta transition-colors duration-500">
+                <h3 className="text-2xl font-bold text-core-blue mb-6 leading-[1.15] group-hover:text-terracotta transition-colors duration-500">
                   {story.name}
                 </h3>
                 <p className="text-stone-600 text-lg leading-relaxed mb-10 flex-grow font-medium opacity-90">
@@ -171,10 +171,10 @@ export const FacesOfChange: React.FC = () => {
           </div>
           <Link 
             href="/success-story"
-            className="relative group px-10 py-4 overflow-hidden border border-deep-purple/20 bg-stone-50/50 hover:bg-deep-purple transition-all duration-500 shrink-0 inline-block"
+            className="relative group px-10 py-4 overflow-hidden border border-core-blue/20 bg-stone-50/50 hover:bg-core-blue transition-all duration-500 shrink-0 inline-block"
           >
-            <span className="relative z-10 text-deep-purple group-hover:text-vibrant-gold font-black text-xs tracking-[0.3em] uppercase">More Stories</span>
-            <div className="absolute inset-0 bg-deep-purple translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            <span className="relative z-10 text-core-blue group-hover:text-vibrant-gold font-black text-xs tracking-[0.3em] uppercase">More Stories</span>
+            <div className="absolute inset-0 bg-core-blue translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
           </Link>
         </div>
       </div>
