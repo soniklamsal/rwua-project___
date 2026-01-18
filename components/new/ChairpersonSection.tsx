@@ -16,7 +16,7 @@ const ChairpersonSkeleton = () => (
       <div className="h-4 w-1/4 bg-zinc-900 rounded-md mb-8" />
       <div className="h-32 w-full bg-zinc-900/50 rounded-xl" />
     </div>
-    <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-24 lg:pb-32 px-8">
+    <div className="w-full lg:w-1/2 relative h-[700px] lg:h-full flex items-end pb-24 lg:pb-32 px-8">
        <div className="w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] bg-zinc-900 rounded-[3rem]" />
     </div>
   </section>
@@ -162,7 +162,7 @@ export const ChairpersonSection: React.FC = () => {
       </div>
 
       {/* RIGHT CONTENT: STACKED IMAGES */}
-      <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-24 lg:pb-32 px-8 lg:px-0">
+      <div className="w-full lg:w-1/2 relative h-[600px] lg:h-full flex items-end pb-10 lg:pb-16 px-10 lg:px-0">
         <div className="relative w-full h-full flex items-end overflow-visible">
           <AnimatePresence mode="popLayout">
             
