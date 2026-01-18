@@ -56,9 +56,6 @@ const nextConfig: NextConfig = {
   // Compression
   compress: true,
   
-  // Production optimizations
-  swcMinify: true,
-  
   // Experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', '@apollo/client'],

@@ -1,11 +1,11 @@
-import { useQuery, DocumentNode, QueryHookOptions } from '@apollo/client';
+import { useQuery, DocumentNode, QueryHookOptions, OperationVariables } from '@apollo/client';
 import { useState, useEffect } from 'react';
 
 /**
  * Custom hook that wraps Apollo useQuery with better error handling
  * Prevents crashes when WordPress is unavailable
  */
-export function useWordPressQuery<TData = any, TVariables = any>(
+export function useWordPressQuery<TData = any, TVariables extends OperationVariables = OperationVariables>(
   query: DocumentNode,
   options?: QueryHookOptions<TData, TVariables>
 ) {
