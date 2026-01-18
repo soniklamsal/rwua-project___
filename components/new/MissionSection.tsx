@@ -335,12 +335,12 @@ export const MissionSection: React.FC = () => {
 
           {/* Text Content Side */}
           <div ref={textRef} className="w-full lg:w-1/2">
-            <h2 className="mission-gsap-text text-6xl lg:text-[84px] font-bold text-blue-900 leading-[0.9] tracking-tighter mb-10">
+            <h2 className="mission-gsap-text text-6xl lg:text-[84px] font-bold text-core-blue leading-[0.9] tracking-tighter mb-10">
               {missionData?.missionTitle1 || "A Dignified"} <br />
-              <span className="text-red-500 italic">{missionData?.missionTitleItalic || "Life for All."}</span>
+              <span className="text-impact-red italic">{missionData?.missionTitleItalic || "Life for All."}</span>
             </h2>
 
-            <div className="mission-gsap-text mb-12 p-8 bg-stone-50 border-l-8 border-yellow-400 rounded-r-3xl">
+            <div className="mission-gsap-text mb-12 p-8 bg-stone-50 border-l-8 border-flash-yellow rounded-r-3xl">
               <p className="text-stone-800 text-xl lg:text-2xl font-bold italic leading-relaxed">
                 "{missionData?.missionGoal || CORE_GOAL}"
               </p>

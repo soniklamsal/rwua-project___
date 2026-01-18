@@ -3,7 +3,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { executeQuery } from '@/lib/wordpress/client';
-import { SUCCESS_STORIES } from '@/lib/constants';
+
+// --- SKELETON COMPONENT ---
+const FacesSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+    {[1, 2, 3].map((i) => (
+      <div 
+        key={i} 
+        className="bg-white ring-1 ring-stone-100 shadow-sm flex flex-col h-full animate-pulse"
+      >
+        {/* Image Placeholder */}
+        <div className="aspect-[4/3] bg-stone-100 relative">
+          <div className="absolute top-4 left-4 h-6 w-24 bg-stone-200" />
+        </div>
+        {/* Content Placeholder */}
+        <div className="p-10 flex flex-col flex-grow">
+          <div className="h-8 w-3/4 bg-stone-100 rounded mb-6" />
+          <div className="space-y-3 flex-grow">
+            <div className="h-4 w-full bg-stone-50 rounded" />
+            <div className="h-4 w-full bg-stone-50 rounded" />
+            <div className="h-4 w-2/3 bg-stone-50 rounded" />
+          </div>
+          <div className="pt-6 mt-10 border-t border-stone-50 flex justify-between">
+            <div className="h-3 w-32 bg-stone-100 rounded" />
+            <div className="h-3 w-3 bg-stone-100 rounded-full" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 const GET_SUCCESS_STORIES = `
   query GetSuccessStories {
@@ -16,7 +45,6 @@ const GET_SUCCESS_STORIES = `
         categories {
           nodes {
             name
-            slug
           }
         }
         featuredImage {
@@ -31,24 +59,23 @@ const GET_SUCCESS_STORIES = `
 
 export const FacesOfChange: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [stories, setStories] = useState<any[]>(SUCCESS_STORIES);
+  const [stories, setStories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [scrollProgress, setScrollProgress] = useState(0); // Tracks 0 to 1
+  const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // 1. Fetch Stories
   useEffect(() => {
     const fetchStories = async () => {
       try {
         const wpData = await executeQuery(GET_SUCCESS_STORIES);
-        if (wpData?.posts?.nodes && wpData.posts.nodes.length > 0) {
+        if (wpData?.posts?.nodes) {
           const formattedStories = wpData.posts.nodes.map((post: any, index: number) => ({
             id: post.id || (index + 1).toString(),
             name: post.title,
             slug: post.slug,
             content: post.excerpt 
-              ? post.excerpt.replace(/<[^>]*>/g, '').replace(/&hellip;/g, '...').substring(0, 160) + '...' 
-              : 'Discover the full impact of this journey...',
+              ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 160) + '...' 
+              : 'Discover the full impact...',
             category: post.categories?.nodes?.[0]?.name || 'Success Story',
             location: 'Global Impact',
             imageUrl: post.featuredImage?.node?.sourceUrl || null
@@ -56,15 +83,15 @@ export const FacesOfChange: React.FC = () => {
           setStories(formattedStories);
         }
       } catch (error) {
-        console.error('Error fetching Success Stories:', error);
+        console.error('Error fetching Stories:', error);
       } finally {
-        setLoading(false);
+        // Slight delay to ensure smooth entry
+        setTimeout(() => setLoading(false), 600);
       }
     };
     fetchStories();
   }, []);
 
-  // 2. Intersection Observer for Entry Animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
@@ -74,23 +101,15 @@ export const FacesOfChange: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // 3. Scroll Listener for Progress Bar Fill
   useEffect(() => {
     const handleScroll = () => {
       if (!sectionRef.current) return;
-
       const rect = sectionRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-
-      // Calculate how much of the section has passed through the viewport
-      // 0 = section just entered bottom, 1 = section leaving top
       const totalHeight = rect.height + windowHeight;
       const progress = 1 - (rect.bottom / totalHeight);
-      
-      // Clamp between 0 and 1
       setScrollProgress(Math.min(Math.max(progress, 0), 1));
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -99,6 +118,7 @@ export const FacesOfChange: React.FC = () => {
     <section ref={sectionRef} className="py-32 bg-white overflow-hidden selection:bg-core-blue selection:text-white relative">
       <div className="container mx-auto px-8 md:px-16 lg:px-24 relative z-10">
         
+        {/* Header - Always visible to anchor the layout */}
         <div className="mb-24 flex flex-col items-center text-center">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="flex items-center justify-center gap-4 mb-6">
@@ -112,56 +132,60 @@ export const FacesOfChange: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
-          {stories.map((story, index) => (
-            <Link 
-              key={story.id}
-              href={`/post/${story.slug}`}
-              className={`bg-white rounded-none overflow-hidden ring-1 ring-stone-100 shadow-md hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 group flex flex-col h-full transform cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-              style={{ transitionDelay: `${(index + 2) * 200}ms` }}
-            >
-              <div className="aspect-[4/3] overflow-hidden relative">
-                {story.imageUrl ? (
-                  <img 
-                    src={story.imageUrl} 
-                    alt={story.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale-[30%] group-hover:grayscale-0"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-stone-100 flex items-center justify-center">
-                    <span className="text-stone-300 text-[10px] font-black uppercase tracking-widest">No Image Found</span>
-                  </div>
-                )}
-                <div className="absolute top-4 left-4 z-20">
-                  <span className="bg-white/90 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-3 py-1 text-core-blue border border-core-blue/10">
-                    {story.category}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-10 flex flex-col flex-grow">
-                <h3 className="text-2xl font-bold text-core-blue mb-6 leading-[1.15] group-hover:text-terracotta transition-colors duration-500">
-                  {story.name}
-                </h3>
-                <p className="text-stone-600 text-lg leading-relaxed mb-10 flex-grow font-medium opacity-90">
-                  {story.content}
-                </p>
-                
-                <div className="pt-6 mt-auto border-t border-stone-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">
-                      LOCATION: {story.location}
+        {/* Conditional Content */}
+        {loading ? (
+          <FacesSkeleton />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+            {stories.map((story, index) => (
+              <Link 
+                key={story.id}
+                href={`/post/${story.slug}`}
+                className={`bg-white rounded-none overflow-hidden ring-1 ring-stone-100 shadow-md hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 group flex flex-col h-full transform cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                style={{ transitionDelay: `${(index + 1) * 150}ms` }}
+              >
+                <div className="aspect-[4/3] overflow-hidden relative">
+                  {story.imageUrl ? (
+                    <img 
+                      src={story.imageUrl} 
+                      alt={story.name}
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale-[30%] group-hover:grayscale-0"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-stone-100 flex items-center justify-center">
+                      <span className="text-stone-300 text-[10px] font-black uppercase tracking-widest">No Image Found</span>
+                    </div>
+                  )}
+                  <div className="absolute top-4 left-4 z-20">
+                    <span className="bg-white/90 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-3 py-1 text-core-blue border border-core-blue/10">
+                      {story.category}
                     </span>
-                    <div className="w-2 h-2 rounded-full bg-vibrant-gold scale-0 group-hover:scale-100 transition-transform"></div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
 
-        {/* --- FIXED PROGRESS BAR SECTION --- */}
+                <div className="p-10 flex flex-col flex-grow">
+                  <h3 className="text-2xl font-bold text-core-blue mb-6 leading-[1.15] group-hover:text-terracotta transition-colors duration-500">
+                    {story.name}
+                  </h3>
+                  <p className="text-stone-600 text-lg leading-relaxed mb-10 flex-grow font-medium opacity-90">
+                    {story.content}
+                  </p>
+                  
+                  <div className="pt-6 mt-auto border-t border-stone-100">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">
+                        LOCATION: {story.location}
+                      </span>
+                      <div className="w-2 h-2 rounded-full bg-vibrant-gold scale-0 group-hover:scale-100 transition-transform"></div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Progress Bar & Footer Action */}
         <div className={`mt-24 flex items-center gap-12 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex-grow h-[2px] bg-stone-100 relative overflow-hidden rounded-full">
             <div 
