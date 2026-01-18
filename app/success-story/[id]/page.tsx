@@ -36,7 +36,9 @@ export default function StoryDetailPage() {
       console.log('📄 Raw post data:', data.postBy);
       const transformedStory = transformToSuccessStory(data.postBy as WordPressSuccessStoryPost);
       console.log('✅ Transformed story:', transformedStory);
-      setStory(transformedStory);
+      
+      // Use functional update to avoid dependency on setStory
+      setStory(() => transformedStory);
     } else if (data && !data.postBy) {
       console.log('⚠️ Query returned but no post found for slug:', slug);
     }
