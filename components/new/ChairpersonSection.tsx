@@ -198,7 +198,7 @@ export const ChairpersonSection: React.FC = () => {
               key={`third-${thirdSlide.id}`}
               layout
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.9 }}
+              animate={{ opacity: 0.8 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.9, delay: 0.2 }}
               className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block shadow-lg"
