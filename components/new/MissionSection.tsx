@@ -8,7 +8,30 @@ import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// WordPress query
+// --- SKELETON COMPONENT ---
+const MissionSkeleton = () => (
+  <section className="py-24 lg:py-36 bg-white overflow-hidden">
+    <div className="container mx-auto px-8 md:px-16 lg:px-24">
+      <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-32">
+        {/* Left Side: Card Stack Skeleton */}
+        <div className="w-full lg:w-1/2 flex flex-col items-center">
+          <div className="relative w-full max-w-[460px] aspect-square bg-stone-100 rounded-[32px] animate-pulse flex items-center justify-center">
+            <div className="w-3/4 h-3/4 bg-stone-200 rounded-2xl" />
+          </div>
+          <div className="mt-16 h-4 w-48 bg-stone-100 rounded-full animate-pulse" />
+        </div>
+
+        {/* Right Side: Text Skeleton */}
+        <div className="w-full lg:w-1/2">
+          <div className="h-20 lg:h-32 w-full bg-stone-100 rounded-2xl mb-4 animate-pulse" />
+          <div className="h-20 lg:h-32 w-2/3 bg-stone-100 rounded-2xl mb-10 animate-pulse" />
+          <div className="h-40 w-full bg-stone-50 border-l-8 border-stone-200 rounded-r-3xl animate-pulse" />
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const GET_MISSION_SECTION = `
 query GetMissionSection {
   missions(first: 1) {
@@ -75,7 +98,6 @@ export const MissionSection: React.FC = () => {
     if (loading || !missionData) return;
 
     const ctx = gsap.context(() => {
-      // Animate Heading and Goal
       gsap.from(".mission-gsap-text", {
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -88,7 +110,6 @@ export const MissionSection: React.FC = () => {
         stagger: 0.15
       });
 
-      // Animate Card Stack Reveal
       gsap.from(".mission-card-anim", {
         scrollTrigger: {
           trigger: containerRef.current,
@@ -110,6 +131,7 @@ export const MissionSection: React.FC = () => {
   useEffect(() => {
     const fetchMissionData = async () => {
       try {
+        setLoading(true);
         const wpData = await executeQuery(GET_MISSION_SECTION);
         if (wpData?.missions?.nodes?.[0]?.missionFields) {
           setMissionData(wpData.missions.nodes[0].missionFields);
@@ -125,17 +147,10 @@ export const MissionSection: React.FC = () => {
           });
         }
       } catch (error) {
-        setMissionData({
-          missionTitle1: "A Dignified",
-          missionTitleItalic: "Life for All.",
-          missionGoal: CORE_GOAL,
-          missionCards: STACK_IMAGES.map((img) => ({
-            cardLabel: img.title,
-            cardImage: { node: { sourceUrl: img.url } }
-          }))
-        });
+        console.error("Mission fetch error:", error);
       } finally {
-        setLoading(false);
+        // Adding a slight delay so the skeleton doesn't flash too fast
+        setTimeout(() => setLoading(false), 800);
       }
     };
     fetchMissionData();
@@ -256,6 +271,9 @@ export const MissionSection: React.FC = () => {
     setIsGrabbing(false);
   };
 
+  // --- RETURN SKELETON IF LOADING ---
+  if (loading) return <MissionSkeleton />;
+
   return (
     <section ref={sectionRef} className="py-24 lg:py-36 bg-white overflow-hidden select-none" onMouseUp={handleMouseUp} onTouchEnd={handleMouseUp}>
       <div className="container mx-auto px-8 md:px-16 lg:px-24">
@@ -298,8 +316,8 @@ export const MissionSection: React.FC = () => {
                   />
                   <div className="absolute bottom-10 left-10 right-10">
                     <div className="bg-white/95 backdrop-blur-xl px-6 py-2.5 rounded-full shadow-2xl border border-white/20 inline-flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-impact-red animate-pulse"></div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-core-blue">Impact Area 0{card.id}</span>
+                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-900">Impact Area 0{card.id}</span>
                     </div>
                   </div>
                 </div>
@@ -317,12 +335,12 @@ export const MissionSection: React.FC = () => {
 
           {/* Text Content Side */}
           <div ref={textRef} className="w-full lg:w-1/2">
-            <h2 className="mission-gsap-text text-6xl lg:text-[84px] font-serif-impact text-core-blue leading-[0.9] tracking-tighter mb-10">
+            <h2 className="mission-gsap-text text-6xl lg:text-[84px] font-bold text-blue-900 leading-[0.9] tracking-tighter mb-10">
               {missionData?.missionTitle1 || "A Dignified"} <br />
-              <span className="text-impact-red italic">{missionData?.missionTitleItalic || "Life for All."}</span>
+              <span className="text-red-500 italic">{missionData?.missionTitleItalic || "Life for All."}</span>
             </h2>
 
-            <div className="mission-gsap-text mb-12 p-8 bg-stone-50 border-l-8 border-flash-yellow rounded-r-3xl">
+            <div className="mission-gsap-text mb-12 p-8 bg-stone-50 border-l-8 border-yellow-400 rounded-r-3xl">
               <p className="text-stone-800 text-xl lg:text-2xl font-bold italic leading-relaxed">
                 "{missionData?.missionGoal || CORE_GOAL}"
               </p>

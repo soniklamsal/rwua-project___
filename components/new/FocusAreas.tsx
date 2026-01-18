@@ -5,7 +5,43 @@ import { motion } from 'framer-motion';
 import { Target, Globe, Rocket, ArrowUpRight } from 'lucide-react';
 import { executeQuery } from '@/lib/wordpress/client';
 
-// WordPress query
+// --- SKELETON COMPONENT ---
+const FocusAreasSkeleton = () => (
+  <section className="py-20 lg:py-32 bg-white overflow-hidden relative">
+    <div className="container mx-auto px-6 relative z-10">
+      {/* Header Skeleton */}
+      <div className="mb-16 lg:mb-24 flex flex-col lg:flex-row lg:items-end gap-8 justify-between border-b border-slate-50 pb-12 lg:pb-16 animate-pulse">
+        <div className="flex-1">
+          <div className="w-32 h-4 bg-slate-100 rounded-full mb-6" />
+          <div className="h-20 lg:h-32 w-3/4 bg-slate-100 rounded-2xl" />
+        </div>
+        <div className="w-64 h-16 bg-slate-50 rounded-xl lg:mb-4" />
+      </div>
+
+      {/* Grid Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-[450px] bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-between animate-pulse">
+            <div>
+              <div className="w-16 h-16 bg-slate-200 rounded-2xl mb-10" />
+              <div className="h-10 w-2/3 bg-slate-200 rounded-lg mb-6" />
+              <div className="space-y-3">
+                <div className="h-4 w-full bg-slate-100 rounded" />
+                <div className="h-4 w-full bg-slate-100 rounded" />
+                <div className="h-4 w-5/6 bg-slate-100 rounded" />
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="w-24 h-12 bg-white rounded-2xl border border-slate-100" />
+              <div className="w-12 h-12 bg-white rounded-full border border-slate-100" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 const GET_FOCUS_AREAS_SECTION = `
   query GetFocusAreasSection {
     focusArea(id: "focusarea", idType: SLUG) {
@@ -59,10 +95,12 @@ const focusData = [
 
 export const FocusAreas: React.FC = () => {
   const [focusAreasData, setFocusAreasData] = useState(focusData);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFocusAreasData = async () => {
       try {
+        setLoading(true);
         const wpData = await executeQuery(GET_FOCUS_AREAS_SECTION);
         if (wpData?.focusArea?.focusAreaFieldsType?.focusCards?.length > 0) {
           const wpFocusCards = wpData.focusArea.focusAreaFieldsType.focusCards.map((card: any, index: number) => ({
@@ -75,14 +113,18 @@ export const FocusAreas: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching WordPress Focus Areas data:', error);
+      } finally {
+        // Subtle delay for smoother visual transition
+        setTimeout(() => setLoading(false), 600);
       }
     };
     fetchFocusAreasData();
   }, []);
 
+  if (loading) return <FocusAreasSkeleton />;
+
   return (
     <section className="py-20 lg:py-32 bg-[#ffffff] text-slate-900 overflow-hidden relative">
-      
       {/* Background Accents */}
       <div className="absolute top-0 right-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#0100FA]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
       <div className="absolute bottom-0 left-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#C2410C]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
@@ -127,17 +169,14 @@ export const FocusAreas: React.FC = () => {
               className="group relative"
               style={{ perspective: '1200px' }}
             >
-              {/* Main Card Container */}
               <div className={`h-full bg-white border border-slate-50 rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-between transition-all duration-500 
                 ${item.border} 
                 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.12),0_20px_40px_-20px_rgba(0,0,0,0.08)]
                 group-hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.18),0_30px_60px_-30px_rgba(0,0,0,0.22)]`}
               >
-                
                 <div className={`absolute inset-0 ${item.glow} opacity-0 group-hover:opacity-100 rounded-[2.5rem] transition-opacity duration-500 -z-10`} />
 
                 <div>
-                  {/* Icon Box */}
                   <div className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl ${item.color} flex items-center justify-center mb-8 lg:mb-10 ${item.shadow} group-hover:rotate-[360deg] transition-transform duration-1000 ease-in-out`}>
                     <div className="text-white">
                       {item.icon}
@@ -165,7 +204,6 @@ export const FocusAreas: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Bottom Line Accent */}
                 <div className={`absolute bottom-0 left-8 lg:left-12 right-8 lg:right-12 h-[3px] bg-gradient-to-r ${item.color} opacity-20 group-hover:opacity-100 transition-all duration-500 rounded-full`} />
               </div>
             </motion.div>
