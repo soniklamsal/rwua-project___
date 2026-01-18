@@ -50,25 +50,71 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('idle');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setSubmitStatus('success');
-      setTimeout(() => {
-        onClose();
-        setFormData({
-          fullName: '',
-          email: '',
-          message: '',
-          cv: null
-        });
-        setSubmitStatus('idle');
-      }, 2000);
+      console.log('🔍 Starting application submission...');
+      console.log('Form data:', {
+        fullName: formData.fullName,
+        email: formData.email,
+        message: formData.message,
+        cvFile: formData.cv?.name || 'No CV',
+        vacancy: vacancy
+      });
+
+      // Create FormData for file upload
+      const submitFormData = new FormData();
+      submitFormData.append('fullName', formData.fullName);
+      submitFormData.append('email', formData.email);
+      submitFormData.append('message', formData.message);
+      submitFormData.append('vacancyId', vacancy.id);
+      submitFormData.append('vacancyPosition', vacancy.position);
+      submitFormData.append('vacancyDepartment', vacancy.department);
+      
+      if (formData.cv) {
+        submitFormData.append('cv', formData.cv);
+        console.log('✅ CV file attached:', formData.cv.name);
+      } else {
+        console.log('⚠️ No CV file attached');
+      }
+
+      console.log('📤 Sending request to /api/apply...');
+
+      const response = await fetch('/api/apply', {
+        method: 'POST',
+        body: submitFormData
+      });
+
+      console.log('📥 Response status:', response.status);
+      const result = await response.json();
+      console.log('📥 Application API Response:', result);
+      
+      if (response.ok && result.success === true) {
+        console.log('✅ Job application submitted successfully:', result);
+        setSubmitStatus('success');
+        setTimeout(() => {
+          onClose();
+          setFormData({
+            fullName: '',
+            email: '',
+            message: '',
+            cv: null
+          });
+          setSubmitStatus('idle');
+        }, 3000);
+      } else {
+        console.error('❌ Job application submission failed:', result);
+        setSubmitStatus('error');
+      }
     } catch (error) {
+      console.error('💥 Network error submitting job application:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
+      // Keep error message visible longer
+      if (submitStatus === 'error') {
+        setTimeout(() => setSubmitStatus('idle'), 8000);
+      }
     }
   };
 
@@ -122,14 +168,13 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Upload CV*</label>
+            <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Upload CV</label>
             <div className="relative">
               <input
                 type="file"
                 accept=".pdf,.doc,.docx"
                 onChange={handleFileChange}
-                required
                 className="hidden"
                 id="cv-upload"
               />
@@ -138,7 +183,7 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
                 className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-sm cursor-pointer flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
                 <span className={formData.cv ? 'text-gray-900' : 'text-gray-500'}>
-                  {formData.cv ? formData.cv.name : 'Choose CV file (PDF, DOC, DOCX)'}
+                  {formData.cv ? formData.cv.name : 'Choose CV file (PDF, DOC, DOCX) - Optional'}
                 </span>
                 <Upload className="w-4 h-4 text-gray-400" />
               </label>
@@ -181,7 +226,7 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
           {submitStatus === 'success' && (
             <div className="p-2.5 bg-green-50 border border-green-200 rounded-md">
               <p className="text-green-800 text-xs font-medium">
-                Application submitted successfully! We'll review your application and get back to you soon.
+                ✅ Application submitted successfully! Your application has been added to our system and we'll review it soon.
               </p>
             </div>
           )}
@@ -189,7 +234,7 @@ export default function ApplicationForm({ vacancy, isOpen, onClose }: Applicatio
           {submitStatus === 'error' && (
             <div className="p-2.5 bg-red-50 border border-red-200 rounded-md">
               <p className="text-red-800 text-xs font-medium">
-                Failed to submit application. Please try again.
+                ❌ Failed to submit application. The application could not be added to our system. Please try again or contact us directly.
               </p>
             </div>
           )}

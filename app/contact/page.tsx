@@ -41,17 +41,48 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('idle');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', message: '', needQuickReply: false });
-    } catch {
+      console.log('🔍 Starting contact form submission...');
+      console.log('Form data:', {
+        fullName: formData.name,
+        email: formData.email,
+        message: formData.message
+      });
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.name,
+          email: formData.email,
+          message: formData.message
+        })
+      });
+
+      console.log('📥 Response status:', response.status);
+      const result = await response.json();
+      console.log('📥 Contact API Response:', result);
+      
+      // Check both response status AND result.success (exactly like application form)
+      if (response.ok && result.success === true) {
+        console.log('✅ Contact form submitted successfully:', result);
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', message: '', needQuickReply: false });
+      } else {
+        console.error('❌ Contact form submission failed:', result);
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('💥 Network error submitting contact form:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
-      setTimeout(() => setSubmitStatus('idle'), 3000);
+      // Keep error message visible longer (like application form)
+      setTimeout(() => setSubmitStatus('idle'), 5000);
     }
   };
 
@@ -218,14 +249,14 @@ export default function ContactPage() {
 
                 {/* Status Messages */}
                 {submitStatus === 'success' && (
-                  <div className="p-4 bg-impact-red/10 border border-impact-red/20 rounded-2xl">
-                    <p className="text-impact-red text-sm font-bold">Message sent successfully! We&apos;ll get back to you soon.</p>
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-2xl">
+                    <p className="text-green-700 text-sm font-bold">✅ Message sent successfully! Your inquiry has been added to our system and we'll get back to you soon.</p>
                   </div>
                 )}
 
                 {submitStatus === 'error' && (
-                  <div className="p-4 bg-terracotta/10 border border-terracotta/20 rounded-2xl">
-                    <p className="text-terracotta text-sm font-bold">Failed to send message. Please try again.</p>
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-2xl">
+                    <p className="text-red-700 text-sm font-bold">❌ Failed to send message. The inquiry could not be added to our system. Please try again or contact us directly.</p>
                   </div>
                 )}
               </form>
