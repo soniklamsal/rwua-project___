@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, Transition, Variants } from 'framer-motion';
 import { apolloClient } from '../../lib/wordpress/client';
 import { gql } from '@apollo/client';
 import { ShowcaseMember } from '../../lib/faust-types';
@@ -44,12 +44,25 @@ const GET_ALL_SHOWCASE_MEMBERS = gql`
   }
 `;
 
+// Explicitly typed transitions to avoid TS errors
+const springTransition: Transition = {
+  type: "spring",
+  stiffness: 100,
+  damping: 20,
+  mass: 1
+};
+
+const bgTransition: Transition = {
+  duration: 1.5,
+  ease: [0.43, 0.13, 0.23, 0.96]
+};
+
 export const ChairpersonSection: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [slides, setSlides] = useState<ShowcaseMember[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const fetchShowcaseMembers = async () => {
@@ -66,25 +79,14 @@ export const ChairpersonSection: React.FC = () => {
             name: member.name || 'Member',
             nepaliName: member.nepaliName || '',
             role: member.role || 'Team Member',
-            quote: member.quote || 'Leading community transformation.',
-            phone: member.phone || '',
+            quote: member.quote || '',
             description: member.quote || 'Leading community transformation.',
             imageUrl: member.memberUrl?.node?.sourceUrl || ORG_MEMBERS[0].imageUrl,
             bgImageUrl: member.bgImage?.node?.sourceUrl || member.memberUrl?.node?.sourceUrl || ORG_MEMBERS[0].imageUrl,
           }));
           setSlides(wpMembers);
         } else {
-          setSlides(ORG_MEMBERS.map((m, i) => ({
-            id: i.toString(),
-            name: m.name,
-            nepaliName: m.nepaliName,
-            role: m.role,
-            quote: typeof m.quote === 'string' ? m.quote : 'Leading community transformation.',
-            phone: m.phone || '',
-            description: typeof m.quote === 'string' ? m.quote : 'Leading community transformation.',
-            imageUrl: m.imageUrl,
-            bgImageUrl: m.imageUrl,
-          })));
+          setSlides(ORG_MEMBERS as unknown as ShowcaseMember[]);
         }
       } catch (error) {
         console.error("Error fetching members:", error);
@@ -99,13 +101,14 @@ export const ChairpersonSection: React.FC = () => {
     if (isAnimating || slides.length === 0) return;
     setIsAnimating(true);
     setCurrentIndex((prev) => (prev + 1) % slides.length);
-    setTimeout(() => setIsAnimating(false), 1000);
+    setTimeout(() => setIsAnimating(false), 800);
   }, [slides.length, isAnimating]);
 
   useEffect(() => {
-    timerRef.current = window.setInterval(handleNext, 7000);
+    if (slides.length === 0) return;
+    timerRef.current = setInterval(handleNext, 7000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [handleNext]);
+  }, [handleNext, slides.length]);
 
   if (isLoading || slides.length === 0) return <ChairpersonSkeleton />;
 
@@ -121,24 +124,24 @@ export const ChairpersonSection: React.FC = () => {
         <motion.div
           key={`bg-${currentSlide.id}`}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.25 }}
+          animate={{ opacity: 0.3 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          className="absolute inset-0 z-0 bg-cover bg-center grayscale blur-md"
+          transition={bgTransition}
+          className="absolute inset-0 z-0 bg-cover bg-center grayscale blur-xl"
           style={{ backgroundImage: `url(${currentSlide.bgImageUrl})` }}
         />
       </AnimatePresence>
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black via-black/90 to-transparent" />
 
       {/* LEFT CONTENT */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center pt-24 pb-12 lg:py-0 px-8 md:px-20 lg:pl-32 lg:pr-10 z-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide.id}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <h1 className="font-serif text-5xl md:text-7xl lg:text-[110px] font-bold leading-[0.9] mb-4 text-white">
               {currentSlide.name}
@@ -149,14 +152,9 @@ export const ChairpersonSection: React.FC = () => {
             <p className="text-zinc-500 text-[10px] lg:text-xs tracking-[0.4em] uppercase font-bold mb-6">
               {currentSlide.role}
             </p>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-zinc-300 text-base lg:text-lg leading-relaxed max-w-md mb-8 lg:mb-10"
-            >
+            <p className="text-zinc-300 text-base lg:text-lg leading-relaxed max-w-md mb-8 lg:mb-10">
               {currentSlide.description}
-            </motion.p>
+            </p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -166,44 +164,49 @@ export const ChairpersonSection: React.FC = () => {
         <div className="relative w-full h-full flex items-end overflow-visible">
           <AnimatePresence mode="popLayout">
             
-            {/* 1. MAIN IMAGE */}
+            {/* MAIN IMAGE */}
             <motion.div
               key={`main-${currentSlide.id}`}
-              layout
-              initial={{ x: 100, opacity: 0, scale: 0.9 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={(_, info) => { if (info.offset.x < -70) handleNext(); }}
+              initial={{ x: 150, opacity: 0, scale: 0.9 }}
               animate={{ x: 0, opacity: 1, scale: 1 }}
-              exit={{ x: -100, opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute left-0 z-30 w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[2rem] lg:rounded-[3rem] border-[6px] lg:border-[10px] border-white shadow-2xl overflow-hidden cursor-pointer"
+              exit={{ x: -250, opacity: 0, scale: 0.85, rotate: -4 }}
+              transition={springTransition}
+              className="absolute left-0 z-30 w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[2rem] lg:rounded-[3rem] border-[6px] lg:border-[10px] border-white shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing touch-none"
               onClick={handleNext}
             >
-              <img src={currentSlide.imageUrl} className="w-full h-full object-cover" alt="Main" />
+              <img 
+                src={currentSlide.imageUrl} 
+                className="w-full h-full object-cover pointer-events-none select-none" 
+                alt="Main" 
+                draggable={false}
+              />
             </motion.div>
 
-            {/* 2. SECOND IMAGE */}
+            {/* SECOND IMAGE */}
             <motion.div
               key={`second-${nextSlide.id}`}
-              layout
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -50, opacity: 0.95 }}
-              transition={{ duration: 0.9, delay: 0.1 }}
-              className="absolute left-[180px] md:left-[280px] lg:left-[360px] z-20 w-[180px] h-[260px] md:w-[280px] md:h-[400px] lg:w-[320px] lg:h-[460px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[4px] lg:border-[8px] border-white grayscale overflow-hidden hidden sm:block shadow-xl"
+              initial={{ x: 80, opacity: 0 }}
+              animate={{ x: 0, opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ ...springTransition, delay: 0.05 }}
+              className="absolute left-[180px] md:left-[280px] lg:left-[360px] z-20 w-[180px] h-[260px] md:w-[280px] md:h-[400px] lg:w-[320px] lg:h-[460px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[4px] lg:border-[8px] border-white grayscale overflow-hidden hidden sm:block"
             >
-              <img src={nextSlide.imageUrl} className="w-full h-full object-cover" alt="Next" />
+              <img src={nextSlide.imageUrl} className="w-full h-full object-cover select-none" alt="Next" draggable={false} />
             </motion.div>
 
-            {/* 3. THIRD IMAGE */}
+            {/* THIRD IMAGE */}
             <motion.div
               key={`third-${thirdSlide.id}`}
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.8 }}
+              initial={{ x: 40, opacity: 0 }}
+              animate={{ x: 0, opacity: 0.2 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.9, delay: 0.2 }}
-              className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block shadow-lg"
+              transition={{ ...springTransition, delay: 0.1 }}
+              className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block"
             >
-              <img src={thirdSlide.imageUrl} className="w-full h-full object-cover" alt="Third" />
+              <img src={thirdSlide.imageUrl} className="w-full h-full object-cover select-none" alt="Third" draggable={false} />
             </motion.div>
 
           </AnimatePresence>
@@ -211,17 +214,19 @@ export const ChairpersonSection: React.FC = () => {
       </div>
 
       {/* FOOTER PAGER */}
-      <footer className="absolute bottom-6 lg:bottom-10 left-8 md:left-20 lg:left-32 z-50 flex items-center gap-3">
+      <footer className="absolute bottom-6 lg:bottom-10 left-8 md:left-20 lg:left-32 z-50 flex items-center gap-4">
         {slides.map((_, idx) => (
           <button key={idx} onClick={() => setCurrentIndex(idx)} className="group py-4">
-            <div className={`h-[2px] transition-all duration-700 ease-in-out ${idx === currentIndex ? 'w-12 bg-blue-500' : 'w-4 bg-white/20 group-hover:bg-white/40'}`} />
+            <motion.div 
+              animate={{ 
+                width: idx === currentIndex ? 40 : 12,
+                backgroundColor: idx === currentIndex ? "#3b82f6" : "rgba(255,255,255,0.2)" 
+              }}
+              className="h-[2px] transition-colors" 
+            />
           </button>
         ))}
-        <span className="text-[10px] font-mono text-white/40 ml-4">
-          {String(currentIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
-        </span>
       </footer>
-
     </section>
   );
 };
