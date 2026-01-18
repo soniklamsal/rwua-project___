@@ -91,7 +91,8 @@ export default function VacancyPage() {
       }
     }
 
-    setFilteredVacancies(filtered);
+    // Use functional update to avoid dependency on setFilteredVacancies
+    setFilteredVacancies(() => filtered);
   }, [allVacancies, searchQuery, activeCategory]);
 
   const handleSearch = (query: string) => setSearchQuery(query);
