@@ -3,6 +3,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { executeQuery } from '@/lib/wordpress/client';
 
+// --- SKELETON COMPONENT ---
+const PartnerSkeleton = () => (
+  <div className="flex animate-pulse">
+    {[1, 2, 3, 4, 5, 6].map((i) => (
+      <div 
+        key={i} 
+        className="w-44 h-44 bg-stone-50 rounded-2xl border border-stone-100 flex flex-col items-center justify-center p-6 mx-4"
+      >
+        <div className="w-24 h-12 bg-stone-200/50 rounded-md mb-4" />
+        <div className="w-20 h-2 bg-stone-100 rounded" />
+      </div>
+    ))}
+  </div>
+);
+
 // WordPress queries
 const GET_PARTNER_LOGOS = `
   query GetPartnerLogos {
@@ -59,11 +74,13 @@ export const PartnerSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [partnersData, setPartnersData] = useState<any[]>(partners);
   const [statsData, setStatsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true); // Added loading state
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true); // Start loading
         const wpData = await executeQuery(GET_PARTNER_LOGOS);
         
         if (wpData?.partners?.nodes?.[0]?.partnerFields?.partnersList) {
@@ -102,6 +119,9 @@ export const PartnerSection: React.FC = () => {
       } catch (error) {
         console.error('Error fetching WordPress data:', error);
         setPartnersData(partners);
+      } finally {
+        // Delay ensures the transition doesn't feel jarring
+        setTimeout(() => setLoading(false), 800);
       }
     };
 
@@ -221,17 +241,23 @@ export const PartnerSection: React.FC = () => {
       </div>
 
       <div className="relative group/scroll">
+        {/* Gradient overlays for the scroll effect */}
         <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
         
-        <div className="flex animate-scroll-rtl hover:[animation-play-state:paused]">
-          {partnersData.map((partner) => (
-            <PartnerCard key={`first-${partner.id}`} partner={partner} />
-          ))}
-          {partnersData.map((partner) => (
-            <PartnerCard key={`second-${partner.id}`} partner={partner} />
-          ))}
-        </div>
+        {/* Conditional Rendering: Show Skeleton or Real Content */}
+        {loading ? (
+          <PartnerSkeleton />
+        ) : (
+          <div className="flex animate-scroll-rtl hover:[animation-play-state:paused]">
+            {partnersData.map((partner) => (
+              <PartnerCard key={`first-${partner.id}`} partner={partner} />
+            ))}
+            {partnersData.map((partner) => (
+              <PartnerCard key={`second-${partner.id}`} partner={partner} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

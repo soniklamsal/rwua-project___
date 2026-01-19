@@ -161,25 +161,25 @@ export const ImpactHero: React.FC = () => {
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
             <div className="w-full lg:w-[55%] order-2 lg:order-1">
               <div className="flex items-center gap-4 mb-6 lg:mb-10 gsap-reveal">
-                <span className="w-12 lg:w-16 h-[2px] bg-[#C2410C]"></span>
-                <span className="text-[#C2410C] font-black uppercase tracking-[0.4em] lg:tracking-[0.6em] text-[9px] lg:text-[10px]">
+                <span className="w-12 lg:w-16 h-[2px] bg-[#FA0105]"></span>
+                <span className="text-[#FA0105] font-black uppercase tracking-[0.4em] lg:tracking-[0.6em] text-[9px] lg:text-[10px]">
                   {heroData.heroSubtitle}
                 </span>
               </div>
 
               <h1 className="gsap-reveal text-5xl md:text-7xl lg:text-[80px] font-black text-[#0100FA] leading-[0.85] mb-8 lg:mb-12 tracking-tighter">
                 {heroData.heroTitle1} <br className="hidden sm:block" />
-                <span className="italic text-[#C2410C] font-medium">
+                <span className="italic text-[#FA0105] font-medium">
                   {heroData.heroTitleItalic}
                 </span>, <br className="hidden sm:block" />
-                {heroData.heroTitle2} <span className="text-[#C2410C]">{heroData.heroTitleEnd}</span>
+                {heroData.heroTitle2} <span className="text-[#FA0105]">{heroData.heroTitleEnd}</span>
               </h1>
 
               <div className="gsap-reveal max-w-xl mb-10 lg:mb-14">
                 <p className="text-stone-500 text-lg lg:text-2xl leading-snug font-bold opacity-80 mb-6 lg:mb-8 tracking-tight">
                   {heroData.heroVision}
                 </p>
-                <div className="p-6 lg:p-8 bg-stone-50 border-l-[8px] lg:border-l-[12px] border-[#D97706] rounded-r-[30px] lg:rounded-r-[40px] italic text-stone-600 font-bold text-base lg:text-xl shadow-sm">
+                <div className="p-6 lg:p-8 bg-stone-50 border-l-[8px] lg:border-l-[12px] border-[#FEFF3E] rounded-r-[30px] lg:rounded-r-[40px] italic text-stone-600 font-bold text-base lg:text-xl shadow-sm">
                   "{heroData.heroMission}"
                 </div>
               </div>
@@ -187,7 +187,7 @@ export const ImpactHero: React.FC = () => {
               <div className="gsap-reveal flex flex-col sm:flex-row items-start sm:items-center gap-8">
                 <button
                   onClick={() => window.location.href = heroData.heroCtaPrimary?.url || '/contact'}
-                  className="w-full sm:w-auto bg-[#C2410C]/90 hover:bg-[#C2410C] text-white font-black py-5 lg:py-6 px-10 lg:px-14 rounded-2xl transition-all shadow-xl hover:scale-105 active:scale-95 text-[10px] lg:text-[11px] uppercase tracking-[0.2em]"
+                  className="w-full sm:w-auto bg-[#FA0105]/90 hover:bg-[#FA0105] text-white font-black py-5 lg:py-6 px-10 lg:px-14 rounded-2xl transition-all shadow-xl hover:scale-105 active:scale-95 text-[10px] lg:text-[11px] uppercase tracking-[0.2em]"
                 >
                   {heroData.heroCtaPrimary?.title || 'Join the movement'}
                 </button>
@@ -197,7 +197,7 @@ export const ImpactHero: React.FC = () => {
                   className="flex items-center gap-4 lg:gap-6 text-[#0100FA] font-black text-[10px] lg:text-[11px] uppercase tracking-[0.2em] group"
                 >
                   <span className="border-b-2 border-[#0100FA]/10 group-hover:border-[#0100FA] transition-all pb-1">Our Impact Film</span>
-                  <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border-2 border-stone-100 flex items-center justify-center group-hover:bg-[#C2410C] group-hover:text-white group-hover:border-[#C2410C] transition-all shadow-md">
+                  <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border-2 border-stone-100 flex items-center justify-center group-hover:bg-[#FA0105] group-hover:text-white group-hover:border-[#FA0105] transition-all shadow-md">
                     <svg className="w-4 h-4 lg:w-5 lg:h-5 fill-current" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
@@ -225,7 +225,7 @@ export const ImpactHero: React.FC = () => {
 
                   <div className="absolute bottom-4 left-4 right-4 lg:bottom-10 lg:left-10 lg:right-10 p-6 lg:p-10 bg-white/95 backdrop-blur-xl rounded-[25px] lg:rounded-[40px] shadow-2xl border border-white/20">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-[#C2410C] flex items-center justify-center shadow-lg">
+                      <div className="w-8 h-8 rounded-full bg-[#FA0105] flex items-center justify-center shadow-lg">
                         <svg className="w-4 h-4" fill="white" viewBox="0 0 24 24">
                           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
@@ -251,7 +251,7 @@ export const ImpactHero: React.FC = () => {
                     </svg>
                   </div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-[#C2410C] text-2xl lg:text-3xl font-black leading-none">{heroData.heroBadgeNum}</span>
+                    <span className="text-[#FA0105] text-2xl lg:text-3xl font-black leading-none">{heroData.heroBadgeNum}</span>
                     <span className="text-[7px] font-black uppercase tracking-widest text-stone-300">Years</span>
                   </div>
                 </div>

@@ -34,7 +34,7 @@ export const ORG_MEMBERS: OrgMember[] = [
     name: 'Goma Devi Neupane',
     nepaliName: 'गोमा देवी न्यौपाने',
     role: 'CHAIRPERSON, RWUA',
-    imageUrl: 'https://rwua.com.np/wp-content/uploads/2014/12/goma.jpg',
+    imageUrl: '/images/goma.jpg',
     contactPerson: 'Bishnu Prasad Chalise',
     phone: '9854035079',
     quote: (
@@ -48,7 +48,7 @@ export const ORG_MEMBERS: OrgMember[] = [
     name: 'Bishnu Parshad Chalise',
     nepaliName: 'बिष्णु प्रसाद चालिसे',
     role: 'SECRETARY, RWUA',
-    imageUrl: 'https://rwua.com.np/wp-content/uploads/2023/03/Bishnu-chalise-scaled.jpg',
+    imageUrl: '/images/bishnu.jpg',
     contactPerson: 'Technical Team',
     phone: '९८५४०३५०७९',
     quote: (

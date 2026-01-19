@@ -50,6 +50,7 @@ export const ChairpersonSection: React.FC = () => {
   const [slides, setSlides] = useState<ShowcaseMember[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   
+  // Use ReturnType to avoid NodeJS vs Window timer conflicts
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -168,7 +169,7 @@ export const ChairpersonSection: React.FC = () => {
         <div className="relative w-full h-full flex items-end overflow-visible">
           <AnimatePresence mode="popLayout">
             
-            {/* 1. MAIN IMAGE */}
+            {/* 1. MAIN IMAGE - DRAGGABLE WITH HAND CURSOR */}
             <motion.div
               key={`main-${currentSlide.id}`}
               drag="x"
@@ -185,9 +186,8 @@ export const ChairpersonSection: React.FC = () => {
             >
               <img 
                 src={currentSlide.imageUrl} 
-                loading="lazy"
                 className="w-full h-full object-cover pointer-events-none select-none" 
-                alt={currentSlide.name} 
+                alt="Main" 
                 draggable={false}
               />
             </motion.div>
@@ -201,13 +201,7 @@ export const ChairpersonSection: React.FC = () => {
               transition={{ duration: 0.9, delay: 0.1 }}
               className="absolute left-[180px] md:left-[280px] lg:left-[360px] z-20 w-[180px] h-[260px] md:w-[280px] md:h-[400px] lg:w-[320px] lg:h-[460px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[4px] lg:border-[8px] border-white grayscale opacity-50 overflow-hidden hidden sm:block shadow-xl"
             >
-              <img 
-                src={nextSlide.imageUrl} 
-                loading="lazy"
-                className="w-full h-full object-cover select-none" 
-                alt="Next" 
-                draggable={false} 
-              />
+              <img src={nextSlide.imageUrl} className="w-full h-full object-cover select-none" alt="Next" draggable={false} />
             </motion.div>
 
             {/* 3. THIRD IMAGE */}
@@ -219,13 +213,7 @@ export const ChairpersonSection: React.FC = () => {
               transition={{ duration: 0.9, delay: 0.2 }}
               className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block shadow-lg"
             >
-              <img 
-                src={thirdSlide.imageUrl} 
-                loading="lazy"
-                className="w-full h-full object-cover select-none" 
-                alt="Third" 
-                draggable={false} 
-              />
+              <img src={thirdSlide.imageUrl} className="w-full h-full object-cover select-none" alt="Third" draggable={false} />
             </motion.div>
 
           </AnimatePresence>
