@@ -9,7 +9,6 @@ import { executeQuery } from '@/lib/wordpress/client';
 const FocusAreasSkeleton = () => (
   <section className="py-20 lg:py-32 bg-white overflow-hidden relative">
     <div className="container mx-auto px-6 relative z-10">
-      {/* Header Skeleton */}
       <div className="mb-16 lg:mb-24 flex flex-col lg:flex-row lg:items-end gap-8 justify-between border-b border-slate-50 pb-12 lg:pb-16 animate-pulse">
         <div className="flex-1">
           <div className="w-32 h-4 bg-slate-100 rounded-full mb-6" />
@@ -18,7 +17,6 @@ const FocusAreasSkeleton = () => (
         <div className="w-64 h-16 bg-slate-50 rounded-xl lg:mb-4" />
       </div>
 
-      {/* Grid Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-[450px] bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-between animate-pulse">
@@ -65,6 +63,7 @@ const focusData = [
     metric: "1,200+ Students",
     icon: <Globe className="w-6 h-6" />,
     color: "bg-core-blue",
+    hex: "#0100FA", // Added hex for dynamic background
     glow: "bg-[#0100FA]/5",
     shadow: "shadow-[0_20px_50px_rgba(1,0,250,0.3)]", 
     border: "group-hover:border-[#0100FA]/40"
@@ -76,6 +75,7 @@ const focusData = [
     metric: "45+ Cooperatives",
     icon: <Rocket className="w-6 h-6" />,
     color: "bg-impact-red",
+    hex: "#C2410C", // Added hex for dynamic background
     glow: "bg-[#C2410C]/5",
     shadow: "shadow-[0_20px_50px_rgba(194,65,12,0.3)]",
     border: "group-hover:border-[#C2410C]/40"
@@ -87,6 +87,7 @@ const focusData = [
     metric: "5k+ Lives",
     icon: <Target className="w-6 h-6" />,
     color: "bg-flash-yellow",
+    hex: "#D97706", // Added hex for dynamic background
     glow: "bg-[#D97706]/5",
     shadow: "shadow-[0_20px_50px_rgba(217,119,6,0.3)]",
     border: "group-hover:border-[#D97706]/40"
@@ -96,6 +97,7 @@ const focusData = [
 export const FocusAreas: React.FC = () => {
   const [focusAreasData, setFocusAreasData] = useState(focusData);
   const [loading, setLoading] = useState(true);
+  const [activeColor, setActiveColor] = useState("#0100FA"); // State for primaryAccent
 
   useEffect(() => {
     const fetchFocusAreasData = async () => {
@@ -114,7 +116,6 @@ export const FocusAreas: React.FC = () => {
       } catch (error) {
         console.error('Error fetching WordPress Focus Areas data:', error);
       } finally {
-        // Subtle delay for smoother visual transition
         setTimeout(() => setLoading(false), 600);
       }
     };
@@ -125,8 +126,11 @@ export const FocusAreas: React.FC = () => {
 
   return (
     <section className="py-20 lg:py-32 bg-[#ffffff] text-slate-900 overflow-hidden relative">
-      {/* Background Accents */}
-      <div className="absolute top-0 right-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#0100FA]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
+      {/* Dynamic Background Accents */}
+      <motion.div 
+        className="absolute top-0 right-0 w-[300px] lg:w-[600px] h-[300px] lg:h-[600px] rounded-full blur-[100px] lg:blur-[140px] -z-0 opacity-20 transition-colors duration-700" 
+        style={{ backgroundColor: activeColor }}
+      />
       <div className="absolute bottom-0 left-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#C2410C]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
 
       <div className="container mx-auto px-6 relative z-10">
@@ -165,6 +169,7 @@ export const FocusAreas: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.15, duration: 0.8 }}
+              onMouseEnter={() => setActiveColor(item.hex)}
               whileHover={{ scale: 1.02, rotateY: 5, rotateX: 2 }} 
               className="group relative"
               style={{ perspective: '1200px' }}
