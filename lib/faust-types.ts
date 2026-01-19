@@ -162,6 +162,7 @@ export interface ShowcaseMember {
   description?: string;
   imageUrl?: string;
   bgImageUrl?: string;
+  altText?: string;
   accentColor?: string;
   memberUrl?: {
     node?: {

@@ -79,7 +79,7 @@ const HeroSkeleton = () => (
 export const ImpactHero: React.FC = () => {
   const [heroData, setHeroData] = useState<any>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -115,18 +115,18 @@ export const ImpactHero: React.FC = () => {
         duration: 1.2,
         stagger: 0.1,
       })
-      .from(imageRef.current, {
-        x: 60,
-        opacity: 0,
-        duration: 1.4,
-        scale: 0.95,
-      }, "-=1")
-      .from(badgeRef.current, {
-        scale: 0,
-        rotation: -90,
-        duration: 0.8,
-        ease: "back.out(1.7)",
-      }, "-=0.6");
+        .from(imageRef.current, {
+          x: 60,
+          opacity: 0,
+          duration: 1.4,
+          scale: 0.95,
+        }, "-=1")
+        .from(badgeRef.current, {
+          scale: 0,
+          rotation: -90,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        }, "-=0.6");
 
       gsap.to(imageRef.current, {
         y: 15,
@@ -142,9 +142,9 @@ export const ImpactHero: React.FC = () => {
   }, [isDataLoaded, heroData]);
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative min-h-screen flex items-center pt-24 pb-12 lg:pt-8 lg:pb-20 bg-white overflow-hidden" 
+    <section
+      ref={containerRef}
+      className="relative min-h-screen flex items-center pt-24 pb-12 lg:pt-8 lg:pb-20 bg-white overflow-hidden"
     >
       {/* Decorative Grid SVG */}
       <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.03]">
@@ -159,7 +159,6 @@ export const ImpactHero: React.FC = () => {
           <HeroSkeleton />
         ) : (
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-            
             <div className="w-full lg:w-[55%] order-2 lg:order-1">
               <div className="flex items-center gap-4 mb-6 lg:mb-10 gsap-reveal">
                 <span className="w-12 lg:w-16 h-[2px] bg-[#C2410C]"></span>
@@ -167,15 +166,15 @@ export const ImpactHero: React.FC = () => {
                   {heroData.heroSubtitle}
                 </span>
               </div>
-              
+
               <h1 className="gsap-reveal text-5xl md:text-7xl lg:text-[80px] font-black text-[#0100FA] leading-[0.85] mb-8 lg:mb-12 tracking-tighter">
-                {heroData.heroTitle1} <br className="hidden sm:block"/>
+                {heroData.heroTitle1} <br className="hidden sm:block" />
                 <span className="italic text-[#C2410C] font-medium">
                   {heroData.heroTitleItalic}
-                </span>, <br className="hidden sm:block"/>
+                </span>, <br className="hidden sm:block" />
                 {heroData.heroTitle2} <span className="text-[#C2410C]">{heroData.heroTitleEnd}</span>
               </h1>
-              
+
               <div className="gsap-reveal max-w-xl mb-10 lg:mb-14">
                 <p className="text-stone-500 text-lg lg:text-2xl leading-snug font-bold opacity-80 mb-6 lg:mb-8 tracking-tight">
                   {heroData.heroVision}
@@ -184,16 +183,16 @@ export const ImpactHero: React.FC = () => {
                   "{heroData.heroMission}"
                 </div>
               </div>
-              
+
               <div className="gsap-reveal flex flex-col sm:flex-row items-start sm:items-center gap-8">
-                <button 
+                <button
                   onClick={() => window.location.href = heroData.heroCtaPrimary?.url || '/contact'}
                   className="w-full sm:w-auto bg-[#C2410C]/90 hover:bg-[#C2410C] text-white font-black py-5 lg:py-6 px-10 lg:px-14 rounded-2xl transition-all shadow-xl hover:scale-105 active:scale-95 text-[10px] lg:text-[11px] uppercase tracking-[0.2em]"
                 >
                   {heroData.heroCtaPrimary?.title || 'Join the movement'}
                 </button>
 
-                <button 
+                <button
                   onClick={() => window.open(heroData.heroVideoUrl || 'https://www.youtube.com', '_blank')}
                   className="flex items-center gap-4 lg:gap-6 text-[#0100FA] font-black text-[10px] lg:text-[11px] uppercase tracking-[0.2em] group"
                 >
@@ -210,17 +209,20 @@ export const ImpactHero: React.FC = () => {
             <div className="w-full lg:w-[45%] order-1 lg:order-2 relative">
               <div ref={imageRef} className="relative z-10" style={{ perspective: '1000px' }}>
                 <div className="relative aspect-[4/5] bg-stone-50 rounded-tr-[120px] lg:rounded-tr-[200px] rounded-bl-[120px] lg:rounded-bl-[200px] overflow-hidden shadow-2xl border-4 lg:border-8 border-white">
-                  {/* NEXT.JS OPTIMIZED IMAGE */}
+                  {/* ── IMPROVED IMAGE LOADING ── */}
                   <Image
                     src={heroData.heroImage?.node?.sourceUrl || "/images/hero.png"}
                     alt={heroData.heroImage?.node?.altText || "Rural Women Upliftment"}
                     fill
-                    priority={true} // Priority loading for Hero section (LCP)
-                    quality={90}
-                    sizes="(max-width: 768px) 100vw, 45vw"
+                    loading="eager"                    // Hero image → eager (important for LCP)
+                    fetchPriority="high"               // Modern hint for important images
+                    placeholder="blur"                 // Nice loading effect
+                    blurDataURL="data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/2gAMAwEAAhEDEQA/AA==" // very small ~1KB blur placeholder
+                    quality={82}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 45vw"
                     className="object-cover transition-transform duration-700 hover:scale-105"
                   />
-                  
+
                   <div className="absolute bottom-4 left-4 right-4 lg:bottom-10 lg:left-10 lg:right-10 p-6 lg:p-10 bg-white/95 backdrop-blur-xl rounded-[25px] lg:rounded-[40px] shadow-2xl border border-white/20">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-8 h-8 rounded-full bg-[#C2410C] flex items-center justify-center shadow-lg">
