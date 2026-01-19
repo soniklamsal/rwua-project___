@@ -152,6 +152,7 @@ export function GallerySection() {
               <img 
                 src={image.src} 
                 alt={image.alt} 
+                loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6 text-white">
@@ -186,6 +187,7 @@ export function GallerySection() {
                 src={selectedImage.src} 
                 alt={selectedImage.alt} 
                 key={selectedImage.src}
+                loading="lazy"
                 className="max-w-full max-h-full object-contain shadow-2xl animate-in fade-in zoom-in-95 duration-300"
               />
             </div>

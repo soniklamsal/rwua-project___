@@ -12,11 +12,9 @@ const FacesSkeleton = () => (
         key={i} 
         className="bg-white ring-1 ring-stone-100 shadow-sm flex flex-col h-full animate-pulse"
       >
-        {/* Image Placeholder */}
         <div className="aspect-[4/3] bg-stone-100 relative">
           <div className="absolute top-4 left-4 h-6 w-24 bg-stone-200" />
         </div>
-        {/* Content Placeholder */}
         <div className="p-10 flex flex-col flex-grow">
           <div className="h-8 w-3/4 bg-stone-100 rounded mb-6" />
           <div className="space-y-3 flex-grow">
@@ -85,7 +83,6 @@ export const FacesOfChange: React.FC = () => {
       } catch (error) {
         console.error('Error fetching Stories:', error);
       } finally {
-        // Slight delay to ensure smooth entry
         setTimeout(() => setLoading(false), 600);
       }
     };
@@ -118,7 +115,6 @@ export const FacesOfChange: React.FC = () => {
     <section ref={sectionRef} className="py-32 bg-white overflow-hidden selection:bg-core-blue selection:text-white relative">
       <div className="container mx-auto px-8 md:px-16 lg:px-24 relative z-10">
         
-        {/* Header - Always visible to anchor the layout */}
         <div className="mb-24 flex flex-col items-center text-center">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="flex items-center justify-center gap-4 mb-6">
@@ -132,7 +128,6 @@ export const FacesOfChange: React.FC = () => {
           </div>
         </div>
 
-        {/* Conditional Content */}
         {loading ? (
           <FacesSkeleton />
         ) : (
@@ -149,6 +144,7 @@ export const FacesOfChange: React.FC = () => {
                     <img 
                       src={story.imageUrl} 
                       alt={story.name}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale-[30%] group-hover:grayscale-0"
                     />
                   ) : (
@@ -185,7 +181,6 @@ export const FacesOfChange: React.FC = () => {
           </div>
         )}
 
-        {/* Progress Bar & Footer Action */}
         <div className={`mt-24 flex items-center gap-12 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex-grow h-[2px] bg-stone-100 relative overflow-hidden rounded-full">
             <div 

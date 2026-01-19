@@ -28,10 +28,7 @@ const AboutSkeleton = () => (
         {/* Card Stack Skeleton */}
         <div className="w-full lg:w-1/2 flex flex-col items-center">
           <div className="relative w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[460px] aspect-square flex items-center justify-center">
-            {/* Background Blur Shimmer */}
             <div className="absolute inset-0 bg-stone-50 rounded-full blur-3xl scale-110" />
-            
-            {/* Skeleton Cards (stacked) */}
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
@@ -51,7 +48,6 @@ const AboutSkeleton = () => (
   </section>
 );
 
-// WordPress query and fallback remain the same
 const GET_ABOUT_SECTION_DATA = `
   query GetAboutSectionData {
     aboutFields {
@@ -109,7 +105,6 @@ export const About: React.FC = () => {
   const lastPos = useRef({ x: 0, y: 0 });
   const lastTime = useRef(0);
 
-  // 1. Fetch Data
   useEffect(() => {
     const fetchAboutData = async () => {
       try {
@@ -120,14 +115,12 @@ export const About: React.FC = () => {
       } catch (error) {
         console.error('Error fetching WordPress About data:', error);
       } finally {
-        // Adding a slight delay for smoother transition
         setTimeout(() => setLoading(false), 800);
       }
     };
     fetchAboutData();
   }, []);
 
-  // 2. Initialize Cards after loading
   useEffect(() => {
     if (loading) return;
 
@@ -155,7 +148,6 @@ export const About: React.FC = () => {
     setCards(initial);
   }, [aboutData, loading]);
 
-  // 3. GSAP Entrance
   useEffect(() => {
     if (loading || !aboutData) return;
 
@@ -190,7 +182,6 @@ export const About: React.FC = () => {
     return () => ctx.revert();
   }, [loading, aboutData]);
 
-  // Handle Drag logic remains the same...
   const handleMouseDown = (e: React.MouseEvent | React.TouchEvent, id: number) => {
     const topCard = cards.reduce((prev, current) => (prev.zIndex > current.zIndex) ? prev : current);
     if (id !== topCard.id || topCard.isThrown) return;
@@ -295,13 +286,19 @@ export const About: React.FC = () => {
                     transition: card.noAnim ? 'none' : (card.isThrown ? 'all 0.4s ease-out' : (isGrabbing ? 'none' : 'all 0.5s ease-out'))
                   }}
                 >
-                  <img src={card.url} alt={card.title} className="w-full h-full object-cover rounded-xl lg:rounded-2xl" draggable={false} />
+                  <img 
+                    src={card.url} 
+                    alt={card.title} 
+                    className="w-full h-full object-cover rounded-xl lg:rounded-2xl" 
+                    draggable={false} 
+                    loading="lazy"
+                  />
                 </div>
               ))}
             </div>
             
             <div className="about-gsap-text mt-12 lg:mt-16 flex items-center gap-4 text-stone-300">
-               <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.3em]">Grab & Swipe to cycle</span>
+                <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.3em]">Grab & Swipe to cycle</span>
             </div>
           </div>
         </div>

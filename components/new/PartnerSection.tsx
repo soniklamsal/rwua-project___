@@ -61,15 +61,10 @@ export const PartnerSection: React.FC = () => {
   const [statsData, setStatsData] = useState<any[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Fetch WordPress data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('=== Starting data fetch ===');
-        
-        // Fetch partners
         const wpData = await executeQuery(GET_PARTNER_LOGOS);
-        console.log('Partners data:', wpData);
         
         if (wpData?.partners?.nodes?.[0]?.partnerFields?.partnersList) {
           const wpPartners = wpData.partners.nodes[0].partnerFields.partnersList
@@ -85,49 +80,27 @@ export const PartnerSection: React.FC = () => {
           setPartnersData(partners);
         }
 
-        // Fetch stats - Try multiple approaches
-        console.log('=== Fetching stats ===');
-        
-        // First try the full query
         let statsResponse = await executeQuery(GET_IMPACT_STATS);
-        console.log('Raw stats response:', JSON.stringify(statsResponse, null, 2));
         
-        // Check if data exists
         if (statsResponse?.impactstats?.nodes && statsResponse.impactstats.nodes.length > 0) {
-          console.log('Found impactstats nodes:', statsResponse.impactstats.nodes.length);
-          
           const firstNode = statsResponse.impactstats.nodes[0];
-          console.log('First node:', firstNode);
-          console.log('First node keys:', Object.keys(firstNode || {}));
-          
-          // Try different possible field names
           let statsList = null;
           
           if (firstNode?.impactStatsFields?.statsList) {
             statsList = firstNode.impactStatsFields.statsList;
-            console.log('✅ Found stats in impactStatsFields');
           } else if (firstNode?.titlestatsFieldsData?.statsList) {
             statsList = firstNode.titlestatsFieldsData.statsList;
-            console.log('✅ Found stats in titlestatsFieldsData');
           } else if (firstNode?.statsFields?.statsList) {
             statsList = firstNode.statsFields.statsList;
-            console.log('✅ Found stats in statsFields');
           }
           
           if (statsList && statsList.length > 0) {
-            console.log('✅ Successfully fetched stats:', statsList);
             setStatsData(statsList);
             setCounts(new Array(statsList.length).fill(0));
-          } else {
-            console.warn('❌ statsList not found in any expected location');
-            console.log('Available fields in first node:', Object.keys(firstNode || {}));
           }
-        } else {
-          console.warn('❌ No impactstats nodes found');
-          console.log('Available keys in response:', Object.keys(statsResponse || {}));
         }
       } catch (error) {
-        console.error('❌ Error fetching WordPress data:', error);
+        console.error('Error fetching WordPress data:', error);
         setPartnersData(partners);
       }
     };
@@ -186,7 +159,6 @@ export const PartnerSection: React.FC = () => {
     setActivePartnerId(prev => prev === id ? null : id);
   };
 
-  // Helper component for the Partner Card to ensure 100% consistency
   const PartnerCard = ({ partner }: { partner: typeof partnersData[0] }) => {
     const isActive = activePartnerId === partner.id;
     
@@ -199,7 +171,6 @@ export const PartnerSection: React.FC = () => {
             : 'border-stone-200/50 hover:border-vibrant-gold/30 hover:shadow-md z-10'
           }`}
       >
-        {/* Decorative background pattern */}
         <div 
           className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${isActive ? 'opacity-[0.08]' : 'opacity-[0.04]'}`}
           style={{
@@ -209,7 +180,6 @@ export const PartnerSection: React.FC = () => {
         ></div>
 
         <div className="relative z-10 flex flex-col items-center justify-center w-full h-full gap-3">
-          {/* 4x4 Image Container */}
           <div className="w-full h-20 flex items-center justify-center">
             <img 
               src={partner.url} 
@@ -233,7 +203,6 @@ export const PartnerSection: React.FC = () => {
           </span>
         </div>
 
-        {/* Bottom indicator bar */}
         <div className={`absolute bottom-0 left-0 w-full h-[4px] bg-vibrant-gold transition-transform duration-500 origin-left ${isActive ? 'scale-x-100' : 'scale-x-0'}`}></div>
       </div>
     );
@@ -242,9 +211,6 @@ export const PartnerSection: React.FC = () => {
   return (
     <section ref={sectionRef} className="pb-24 bg-white border-t border-stone-50 overflow-hidden">
       <div className="container mx-auto px-8 md:px-16 mb-10">
-        {/* Statistics Grid */}
-      
-
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-6 mb-16">
             <div className="h-[1px] w-12 bg-stone-200"></div>
@@ -254,17 +220,14 @@ export const PartnerSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Infinite Scrolling Partners */}
       <div className="relative group/scroll">
         <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
         
         <div className="flex animate-scroll-rtl hover:[animation-play-state:paused]">
-          {/* First set */}
           {partnersData.map((partner) => (
             <PartnerCard key={`first-${partner.id}`} partner={partner} />
           ))}
-          {/* Duplicate set for seamless looping */}
           {partnersData.map((partner) => (
             <PartnerCard key={`second-${partner.id}`} partner={partner} />
           ))}
