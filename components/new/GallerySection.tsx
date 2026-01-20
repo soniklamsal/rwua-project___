@@ -5,32 +5,26 @@ import { ChevronLeft, ChevronRight, Download, X } from 'lucide-react';
 import { executeQuery } from '@/lib/wordpress/client';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import Image from 'next/image'; // Import Next.js Image
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Guaranteed fallback for any missing WordPress images
+const FALLBACK_IMAGE = "https://via.placeholder.com/800x800?text=Gallery+Item";
 
 // --- SKELETON COMPONENT ---
 const GallerySkeleton = () => (
   <section className="py-20 bg-gray-50">
     <div className="container mx-auto px-6">
-      {/* Category Pills Skeleton */}
       <div className="flex justify-center gap-2 mb-12 overflow-x-auto pb-2">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-10 w-24 bg-white border border-stone-100 rounded-full animate-pulse" />
         ))}
       </div>
-
-      {/* Grid Skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div 
-            key={i} 
-            className="aspect-square rounded-2xl bg-white border border-stone-100 overflow-hidden relative"
-          >
+          <div key={i} className="aspect-square rounded-2xl bg-white border border-stone-100 overflow-hidden relative">
             <div className="absolute inset-0 bg-stone-100 animate-pulse" />
-            <div className="absolute bottom-6 left-6 right-6 space-y-2">
-              <div className="h-2 w-16 bg-stone-200 rounded animate-pulse" />
-              <div className="h-4 w-32 bg-stone-200 rounded animate-pulse" />
-            </div>
           </div>
         ))}
       </div>
@@ -84,11 +78,11 @@ export function GallerySection() {
         const wpData = await executeQuery(GET_GALLERY_DATA);
         if (wpData?.galleryItems?.nodes?.[0]?.galleryFields?.galleryItems) {
           const wpGalleryItems = wpData.galleryItems.nodes[0].galleryFields.galleryItems
-            .filter((item: any) => item?.image?.node?.sourceUrl || item?.image?.node?.mediaItemUrl)
             .map((item: any, index: number) => ({
               id: index + 1,
-              src: item.image.node.sourceUrl || item.image.node.mediaItemUrl,
-              alt: item.image.node.altText || item.title || 'Gallery image',
+              // Ensuring a string is always passed to avoid "src=" errors
+              src: item.image?.node?.sourceUrl || item.image?.node?.mediaItemUrl || FALLBACK_IMAGE,
+              alt: item.image?.node?.altText || item.title || 'Gallery image',
               title: item.title || `Gallery Item ${index + 1}`,
               category: Array.isArray(item.category) ? item.category[0] : (item.category || 'Community')
             }));
@@ -126,6 +120,7 @@ export function GallerySection() {
   return (
     <section ref={sectionRef} className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
+        
         {/* Category Filter */}
         <div className="flex justify-center gap-2 mb-12 flex-wrap">
           {['All', ...Array.from(new Set(galleryData.map(i => i.category)))].map((cat) => (
@@ -133,7 +128,7 @@ export function GallerySection() {
               key={cat}
               onClick={() => { setSelectedCategory(cat); setCurrentIndex(null); }}
               className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
-                selectedCategory === cat ? 'bg-core-blue text-white' : 'bg-white text-black-400 border border-black-100'
+                selectedCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 border border-gray-100'
               }`}
             >
               {cat}
@@ -149,11 +144,13 @@ export function GallerySection() {
               className="group relative aspect-square overflow-hidden rounded-2xl cursor-pointer bg-white"
               onClick={() => setCurrentIndex(idx)}
             >
-              <img 
+              {/* LAZY LOADED GRID IMAGE */}
+              <Image 
                 src={image.src} 
                 alt={image.alt} 
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6 text-white">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">{image.category}</p>
@@ -182,13 +179,15 @@ export function GallerySection() {
               <ChevronLeft size={32} />
             </button>
 
-            <div className="w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
-              <img 
+            <div className="relative w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+              {/* MODAL IMAGE - High priority loading */}
+              <Image 
                 src={selectedImage.src} 
                 alt={selectedImage.alt} 
-                key={selectedImage.src}
-                loading="lazy"
-                className="max-w-full max-h-full object-contain shadow-2xl animate-in fade-in zoom-in-95 duration-300"
+                fill
+                priority
+                className="object-contain shadow-2xl animate-in fade-in zoom-in-95 duration-300"
+                sizes="90vw"
               />
             </div>
 

@@ -141,12 +141,15 @@ export const ImpactHero: React.FC = () => {
     return () => ctx.revert();
   }, [isDataLoaded, heroData]);
 
+  // Handle URL safety
+  const heroImageUrl = heroData?.heroImage?.node?.sourceUrl || heroData?.heroImage?.node?.mediaItemUrl || "/images/hero.png";
+
   return (
     <section
       ref={containerRef}
       className="relative min-h-screen flex items-center pt-24 pb-12 lg:pt-8 lg:pb-20 bg-white overflow-hidden"
     >
-      {/* Decorative Grid SVG */}
+      {/* Decorative Grid SVG - Kept Blue #0100FA */}
       <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.03]">
         <svg className="w-full h-full text-[#0100FA]" viewBox="0 0 1000 1000" preserveAspectRatio="none">
           <path d="M0,500 C200,300 400,700 600,500 S800,300 1000,500" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="10 10" />
@@ -179,6 +182,7 @@ export const ImpactHero: React.FC = () => {
                 <p className="text-stone-500 text-lg lg:text-2xl leading-snug font-bold opacity-80 mb-6 lg:mb-8 tracking-tight">
                   {heroData.heroVision}
                 </p>
+                {/* Yellow #FEFF3E border preserved */}
                 <div className="p-6 lg:p-8 bg-stone-50 border-l-[8px] lg:border-l-[12px] border-[#FEFF3E] rounded-r-[30px] lg:rounded-r-[40px] italic text-stone-600 font-bold text-base lg:text-xl shadow-sm">
                   "{heroData.heroMission}"
                 </div>
@@ -209,18 +213,14 @@ export const ImpactHero: React.FC = () => {
             <div className="w-full lg:w-[45%] order-1 lg:order-2 relative">
               <div ref={imageRef} className="relative z-10" style={{ perspective: '1000px' }}>
                 <div className="relative aspect-[4/5] bg-stone-50 rounded-tr-[120px] lg:rounded-tr-[200px] rounded-bl-[120px] lg:rounded-bl-[200px] overflow-hidden shadow-2xl border-4 lg:border-8 border-white">
-                  {/* ── IMPROVED IMAGE LOADING ── */}
                   <Image
-                    src={heroData.heroImage?.node?.sourceUrl || "/images/hero.png"}
+                    src={heroImageUrl}
                     alt={heroData.heroImage?.node?.altText || "Rural Women Upliftment"}
                     fill
-                    loading="eager"                    // Hero image → eager (important for LCP)
-                    fetchPriority="high"               // Modern hint for important images
-                    placeholder="blur"                 // Nice loading effect
-                    blurDataURL="data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/2gAMAwEAAhEDEQA/AA==" // very small ~1KB blur placeholder
-                    quality={82}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 45vw"
+                    priority={true}                 // LCP Optimization
+                    loading="eager"                 // Forces immediate load
                     className="object-cover transition-transform duration-700 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 45vw"
                   />
 
                   <div className="absolute bottom-4 left-4 right-4 lg:bottom-10 lg:left-10 lg:right-10 p-6 lg:p-10 bg-white/95 backdrop-blur-xl rounded-[25px] lg:rounded-[40px] shadow-2xl border border-white/20">
@@ -238,7 +238,7 @@ export const ImpactHero: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Rotating Badge */}
+                {/* Rotating Badge - Blue Text #0100FA */}
                 <div ref={badgeRef} className="absolute -top-6 -left-6 lg:-top-12 lg:-left-12 w-28 h-28 lg:w-40 lg:h-40 bg-white rounded-full shadow-xl flex items-center justify-center z-20">
                   <div className="relative w-full h-full animate-[spin_20s_linear_infinite] flex items-center justify-center">
                     <svg viewBox="0 0 100 100" className="w-24 h-24 lg:w-32 lg:h-32">

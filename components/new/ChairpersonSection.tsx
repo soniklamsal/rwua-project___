@@ -6,6 +6,10 @@ import { apolloClient } from '../../lib/wordpress/client';
 import { gql } from '@apollo/client';
 import { ShowcaseMember } from '../../lib/faust-types';
 import { ORG_MEMBERS } from '../../lib/constants';
+import Image from 'next/image';
+
+// Fallback image in case WordPress URL is broken or missing
+const FALLBACK_IMAGE = "https://via.placeholder.com/1000x1500?text=No+Image+Found";
 
 // --- SKELETON COMPONENT ---
 const ChairpersonSkeleton = () => (
@@ -49,8 +53,6 @@ export const ChairpersonSection: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [slides, setSlides] = useState<ShowcaseMember[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
-  
-  // Use ReturnType to avoid NodeJS vs Window timer conflicts
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -71,25 +73,16 @@ export const ChairpersonSection: React.FC = () => {
             quote: member.quote || 'Leading community transformation.',
             phone: member.phone || '',
             description: member.quote || 'Leading community transformation.',
-            imageUrl: member.memberUrl?.node?.sourceUrl || ORG_MEMBERS[0].imageUrl,
-            bgImageUrl: member.bgImage?.node?.sourceUrl || member.memberUrl?.node?.sourceUrl || ORG_MEMBERS[0].imageUrl,
+            imageUrl: member.memberUrl?.node?.sourceUrl || member.memberUrl?.node?.mediaItemUrl || ORG_MEMBERS[0].imageUrl || FALLBACK_IMAGE,
+            bgImageUrl: member.bgImage?.node?.sourceUrl || member.bgImage?.node?.mediaItemUrl || member.memberUrl?.node?.sourceUrl || FALLBACK_IMAGE,
           }));
           setSlides(wpMembers);
         } else {
-          setSlides(ORG_MEMBERS.map((m: any, i: number) => ({
-            id: i.toString(),
-            name: m.name || '',
-            nepaliName: m.nepaliName || '',
-            role: m.role || '',
-            quote: m.quote || '',
-            phone: m.phone || '',
-            description: typeof m.quote === 'string' ? m.quote : 'Leading community transformation.',
-            imageUrl: m.imageUrl || '',
-            bgImageUrl: m.imageUrl || '',
-          })) as ShowcaseMember[]);
+          setSlides(ORG_MEMBERS as ShowcaseMember[]);
         }
       } catch (error) {
         console.error("Error fetching members:", error);
+        setSlides(ORG_MEMBERS as ShowcaseMember[]);
       } finally {
         setTimeout(() => setIsLoading(false), 800);
       }
@@ -127,9 +120,18 @@ export const ChairpersonSection: React.FC = () => {
           animate={{ opacity: 0.25 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
-          className="absolute inset-0 z-0 bg-cover bg-center grayscale blur-md"
-          style={{ backgroundImage: `url(${currentSlide.bgImageUrl})` }}
-        />
+          className="absolute inset-0 z-0 grayscale blur-md scale-110"
+        >
+          {/* Guaranteed string src by using || FALLBACK_IMAGE */}
+          <Image 
+            src={currentSlide.bgImageUrl || FALLBACK_IMAGE} 
+            alt="Background"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            quality={50}
+          />
+        </motion.div>
       </AnimatePresence>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
 
@@ -152,14 +154,9 @@ export const ChairpersonSection: React.FC = () => {
             <p className="text-zinc-500 text-[10px] lg:text-xs tracking-[0.4em] uppercase font-bold mb-6">
               {currentSlide.role}
             </p>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-zinc-300 text-base lg:text-lg leading-relaxed max-w-md mb-8 lg:mb-10"
-            >
+            <p className="text-zinc-300 text-base lg:text-lg leading-relaxed max-w-md mb-8 lg:mb-10">
               {currentSlide.description}
-            </motion.p>
+            </p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -169,14 +166,12 @@ export const ChairpersonSection: React.FC = () => {
         <div className="relative w-full h-full flex items-end overflow-visible">
           <AnimatePresence mode="popLayout">
             
-            {/* 1. MAIN IMAGE - DRAGGABLE WITH HAND CURSOR */}
+            {/* 1. MAIN IMAGE - Priority for LCP */}
             <motion.div
               key={`main-${currentSlide.id}`}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -100) handleNext();
-              }}
+              onDragEnd={(_, info) => { if (info.offset.x < -100) handleNext(); }}
               initial={{ x: 100, opacity: 0, scale: 0.9 }}
               animate={{ x: 0, opacity: 1, scale: 1 }}
               exit={{ x: -200, opacity: 0, scale: 0.8, rotate: -5 }}
@@ -184,15 +179,17 @@ export const ChairpersonSection: React.FC = () => {
               className="absolute left-0 z-30 w-[280px] h-[400px] md:w-[350px] md:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[2rem] lg:rounded-[3rem] border-[6px] lg:border-[10px] border-white shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing touch-none"
               onClick={handleNext}
             >
-              <img 
-                src={currentSlide.imageUrl} 
-                className="w-full h-full object-cover pointer-events-none select-none" 
-                alt="Main" 
-                draggable={false}
+              <Image 
+                src={currentSlide.imageUrl || FALLBACK_IMAGE} 
+                alt={currentSlide.name}
+                fill
+                priority
+                className="object-cover pointer-events-none select-none"
+                sizes="(max-width: 768px) 280px, 420px"
               />
             </motion.div>
 
-            {/* 2. SECOND IMAGE */}
+            {/* 2. SECOND IMAGE - Lazy Loaded */}
             <motion.div
               key={`second-${nextSlide.id}`}
               initial={{ x: 50, opacity: 0 }}
@@ -201,19 +198,14 @@ export const ChairpersonSection: React.FC = () => {
               transition={{ duration: 0.9, delay: 0.1 }}
               className="absolute left-[180px] md:left-[280px] lg:left-[360px] z-20 w-[180px] h-[260px] md:w-[280px] md:h-[400px] lg:w-[320px] lg:h-[460px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[4px] lg:border-[8px] border-white grayscale opacity-50 overflow-hidden hidden sm:block shadow-xl"
             >
-              <img src={nextSlide.imageUrl} className="w-full h-full object-cover select-none" alt="Next" draggable={false} />
-            </motion.div>
-
-            {/* 3. THIRD IMAGE */}
-            <motion.div
-              key={`third-${thirdSlide.id}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.3 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.9, delay: 0.2 }}
-              className="absolute left-[380px] md:left-[550px] lg:left-[640px] z-10 w-[140px] h-[200px] md:w-[220px] md:h-[320px] lg:w-[280px] lg:h-[400px] rounded-[1.5rem] lg:rounded-[2.5rem] border-[3px] lg:border-[6px] border-white grayscale overflow-hidden hidden lg:block shadow-lg"
-            >
-              <img src={thirdSlide.imageUrl} className="w-full h-full object-cover select-none" alt="Third" draggable={false} />
+              <Image 
+                src={nextSlide.imageUrl || FALLBACK_IMAGE} 
+                alt="Next slide"
+                fill
+                loading="lazy"
+                className="object-cover select-none"
+                sizes="(max-width: 768px) 180px, 320px"
+              />
             </motion.div>
 
           </AnimatePresence>
