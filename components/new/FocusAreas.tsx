@@ -128,7 +128,7 @@ export const FocusAreas: React.FC = () => {
     <section className="py-20 lg:py-32 bg-[#ffffff] text-slate-900 overflow-hidden relative">
       {/* Dynamic Background Accents */}
       <motion.div 
-        className="absolute top-0 right-0 w-[300px] lg:w-[600px] h-[300px] lg:h-[600px] rounded-full blur-[100px] lg:blur-[140px] -z-0 opacity-20 transition-colors duration-700" 
+        className="absolute top-0 right-0 w-[300px] lg:w-[600px] h-[300px] lg:h-[600px] rounded-full blur-[100px] lg:blur-[140px] -z-0 opacity-0 transition-colors duration-700" 
         style={{ backgroundColor: activeColor }}
       />
       <div className="absolute bottom-0 left-0 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-[#C2410C]/5 rounded-full blur-[80px] lg:blur-[100px] -z-0" />
